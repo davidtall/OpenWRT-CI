@@ -32,7 +32,7 @@ jobs:
       fail-fast: false
       #max-parallel: 3
       matrix:
-        CONFIG: [IPQ807X-NOWIFI, IPQ807X-WIFI,IPQ60XX-NOWIFI, IPQ60XX-WIFI]
+        CONFIG: [IPQ807X-WIFI]
         SOURCE: [VIKINGYFY/immortalwrt]
         BRANCH: [main]
 
@@ -44,15 +44,15 @@ jobs:
       #默认主题
       WRT_THEME: argon
       #默认主机名
-      WRT_NAME: DAE-WRT
+      WRT_NAME: OpenWrt
       #默认WIFI名称
-      WRT_SSID: DAE-WRT
+      WRT_SSID: OpenWrt
       #默认WIFI密码
-      WRT_WORD: 12345678
+      WRT_WORD: password
       #默认地址
-      WRT_IP: 192.168.10.1
+      WRT_IP: 192.168.6.1
       #默认密码，仅作提示，修改无用
-      WRT_PW: 无
+      WRT_PW: password
       #源码链接
       WRT_REPO: https://github.com/${{matrix.SOURCE}}.git
       #源码分支
