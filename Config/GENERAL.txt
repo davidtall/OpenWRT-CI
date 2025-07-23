@@ -1,18 +1,18 @@
 #科学插件调整
 #CONFIG_PACKAGE_luci-app-homeproxy=n
-CONFIG_PACKAGE_luci-app-daed=n
-CONFIG_PACKAGE_luci-app-dae=n
+#CONFIG_PACKAGE_luci-app-daed=n
+#CONFIG_PACKAGE_luci-app-dae=n
 CONFIG_PACKAGE_luci-app-passwall=y
 CONFIG_PACKAGE_luci-app-openclash=y
 CONFIG_PACKAGE_luci-app-nps=y
 
 #增加插件
 CONFIG_PACKAGE_luci-app-autoreboot=y
-CONFIG_PACKAGE_luci-app-gecoosac=n
+#CONFIG_PACKAGE_luci-app-gecoosac=n
 #CONFIG_PACKAGE_luci-app-netspeedtest=y
 #CONFIG_PACKAGE_luci-app-partexp=y
-#CONFIG_PACKAGE_luci-app-samba4=y
-#CONFIG_PACKAGE_luci-app-tailscale=y
+CONFIG_PACKAGE_luci-app-samba4=y
+CONFIG_PACKAGE_luci-app-tailscale=y
 CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_PACKAGE_luci-app-wolplus=y
 #CONFIG_PACKAGE_luci-app-advancedplus=n
