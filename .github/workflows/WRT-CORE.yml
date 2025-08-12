@@ -139,7 +139,7 @@ jobs:
           path: |
             ./wrt/.ccache
             ./wrt/staging_dir
-          key: ${{ env.WRT_ARCH }}-${{ hashFiles('**/repo_flag') }}-${{ env.WRT_DATE }}
+          key: ${{ env.WRT_ARCH }}-${{ hashFiles('**/repo_flag') }}
           restore-keys: |
             ${{ env.WRT_ARCH }}-${{ hashFiles('**/repo_flag') }}-
 
@@ -149,8 +149,8 @@ jobs:
             find "./wrt/staging_dir" -type d -name "stamp" -not -path "*target*" | while read -r dir; do
                 find "$dir" -type f -exec touch {} +
             done
-          fi            
-     
+          fi
+
       - name: Add fantastic-packages feed
         run: |
           cd ./wrt/
@@ -183,9 +183,10 @@ jobs:
         run: |
           . $GITHUB_WORKSPACE/Scripts/function.sh
           cd ./wrt/
-          
+
           generate_config && cat .config
-          
+          echo "CONFIG_CCACHE=y" >> .config
+
           $GITHUB_WORKSPACE/Scripts/Settings.sh
 
           make defconfig -j$(nproc) && make clean -j$(nproc)
@@ -278,4 +279,3 @@ jobs:
 
             内核版本：${{env.WRT_KVER}}
             插件列表：${{env.WRT_LIST}}
-
