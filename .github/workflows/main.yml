@@ -161,24 +161,17 @@ jobs:
 
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-
 #定制插件包
-
       - name: Custom Packages
         run: |
           cd ./wrt/package/
-          
 #**********************************
 #在这个脚本，将dockerman删去了
 #**********************************
-          
           $GITHUB_WORKSPACE/Scripts/Packages.sh
 ##对插件包作进一步处理和设置
-          
           $GITHUB_WORKSPACE/Scripts/Handles.sh
-
 #定制设置
-
       - name: Custom Settings
         run: |
 #**********************************
