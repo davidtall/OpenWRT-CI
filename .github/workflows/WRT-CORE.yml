@@ -158,6 +158,7 @@ jobs:
           cd ./wrt/
 
           ./scripts/feeds update -a
+          sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
           ./scripts/feeds install -a
 
       - name: Custom Packages
@@ -266,3 +267,4 @@ jobs:
 
             内核版本：${{env.WRT_KVER}}
             插件列表：${{env.WRT_LIST}}
+
