@@ -158,14 +158,14 @@ jobs:
           cd ./wrt/
 
           ./scripts/feeds update -a
-          sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
+          
           ./scripts/feeds install python3-distutils
           ./scripts/feeds install -a
 
       - name: Custom Packages
         run: |
           cd ./wrt/package/
-          sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
+          
 
           $GITHUB_WORKSPACE/Scripts/Packages.sh
           $GITHUB_WORKSPACE/Scripts/Handles.sh
@@ -178,15 +178,14 @@ jobs:
           generate_config && cat .config
           
           $GITHUB_WORKSPACE/Scripts/Settings.sh
-          sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
-
+          
           make defconfig -j$(nproc) && make clean -j$(nproc)
 
       - name: Download Packages
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
-          sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
+          
 
           make download -j$(nproc)
 
@@ -194,7 +193,7 @@ jobs:
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
-          sed -i 's/--set=llvm\.download-ci-llvm=true/--set=llvm.download-ci-llvm=false/' feeds/packages/lang/rust/Makefile
+          
 
           make -j$(nproc) || make -j1 V=s
 
@@ -272,6 +271,7 @@ jobs:
 
             内核版本：${{env.WRT_KVER}}
             插件列表：${{env.WRT_LIST}}
+
 
 
 
