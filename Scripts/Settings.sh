@@ -70,7 +70,3 @@ if [[ $WRT_TARGET == *"QUALCOMMAX"* ]]; then
 	fi
 fi
 
-echo "CONFIG_PACKAGE_luci-i18n-attendedsysupgrade-zh-cn=n" >> ./.config
-echo "CONFIG_PACKAGE_luci-app-attendedsysupgrade=n" >> ./.config
-echo "CONFIG_PACKAGE_attendedsysupgrade-common=n" >> ./.config
-
