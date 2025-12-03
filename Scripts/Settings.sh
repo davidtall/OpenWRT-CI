@@ -35,13 +35,13 @@ sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
 sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
 
 vlmcsd_patches="./feeds/packages/net/vlmcsd/patches/"
-mkdir -p $vlmcsd_patches && cp -f ../patches/001-fix_compile_with_ccache.patch $vlmcsd_patches
+mkdir -p $vlmcsd_patches && cp -f $GITHUB_WORKSPACE/patches/001-fix_compile_with_ccache.patch $vlmcsd_patches
 
 #修复dropbear
 #sed -i "s/Interface/DirectInterface/" ./package/network/services/dropbear/files/dropbear.config
 sed -i "/Interface/d" ./package/network/services/dropbear/files/dropbear.config
 #拷贝files 文件夹到编译目录
-cp -r ../files ./
+cp -r $GITHUB_WORKSPACE/files ./
 
 #配置文件修改
 #echo "CONFIG_PACKAGE_luci=y" >> ./.config
