@@ -100,7 +100,7 @@ jobs:
           sudo -E apt -yqq autoclean
           sudo -E apt -yqq clean
           sudo -E apt -yqq install dos2unix libfuse-dev
-          sudo bash $GITHUB_WORKSPACE/Scripts/init_build_environment.sh
+          sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
           sudo -E systemctl daemon-reload
           sudo -E timedatectl set-timezone "Asia/Shanghai"
 #          sudo chown $USER:$GROUPS $GITHUB_WORKSPACE
@@ -159,7 +159,6 @@ jobs:
 
           ./scripts/feeds update -a
           
-          ./scripts/feeds install python3-distutils
           ./scripts/feeds install -a
 
       - name: Custom Packages
@@ -271,6 +270,7 @@ jobs:
 
             内核版本：${{env.WRT_KVER}}
             插件列表：${{env.WRT_LIST}}
+
 
 
 
