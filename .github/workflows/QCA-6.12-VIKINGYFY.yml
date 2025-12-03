@@ -48,7 +48,7 @@ jobs:
       #默认主机名
       WRT_NAME: DAE-WRT
       #默认WIFI名称
-      WRT_SSID: CM666
+      WRT_SSID: 809602
       #默认WIFI密码
       WRT_WORD: 12345678
       #默认地址
