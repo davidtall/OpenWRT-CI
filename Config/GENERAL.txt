@@ -152,6 +152,9 @@ CONFIG_PACKAGE_bash=y
 CONFIG_PACKAGE_bind-dig=y
 # CONFIG_PACKAGE_bind-host is not set
 CONFIG_PACKAGE_bind-nslookup=y
+CONFIG_PACKAGE_kmod-ath10k=y
+CONFIG_PACKAGE_kmod-ath10k-ct=y
+
 
 
 
