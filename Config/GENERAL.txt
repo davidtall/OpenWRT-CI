@@ -26,9 +26,9 @@ CONFIG_PACKAGE_luci-app-cpufreq=y
 #CONFIG_PACKAGE_luci-app-gecoosac=y
 #CONFIG_PACKAGE_luci-app-pushbot=y
 CONFIG_PACKAGE_luci-app-mwan3=y
-CONFIG_PACKAGE_docker=y
+#CONFIG_PACKAGE_docker=y
 #CONFIG_PACKAGE_docker-compose=y
-CONFIG_PACKAGE_dockerd=y
+#CONFIG_PACKAGE_dockerd=y
 #CONFIG_PACKAGE_luci-app-docker=y
 #CONFIG_PACKAGE_luci-app-dockerman=y
 CONFIG_PACKAGE_luci-app-usteer=y
@@ -154,6 +154,7 @@ CONFIG_PACKAGE_bind-dig=y
 CONFIG_PACKAGE_bind-nslookup=y
 #CONFIG_PACKAGE_kmod-ath10k=y
 #CONFIG_PACKAGE_kmod-ath10k-ct=y
+
 
 
 
