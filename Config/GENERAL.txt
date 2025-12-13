@@ -10,7 +10,7 @@ CONFIG_PACKAGE_luci-app-gecoosac=y
 #CONFIG_PACKAGE_luci-app-netspeedtest=y
 #CONFIG_PACKAGE_luci-app-partexp=y
 #CONFIG_PACKAGE_luci-app-samba4=y
-#CONFIG_PACKAGE_luci-app-tailscale=y
+CONFIG_PACKAGE_luci-app-tailscale=y
 CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_PACKAGE_luci-app-wolplus=y
 #CONFIG_PACKAGE_luci-app-advancedplus=n
@@ -43,7 +43,7 @@ CONFIG_PACKAGE_luci-app-nikki=n
 CONFIG_PACKAGE_luci-app-netspeedtest=n
 CONFIG_PACKAGE_luci-app-partexp=n
 CONFIG_PACKAGE_luci-app-samba4=n
-CONFIG_PACKAGE_luci-app-tailscale=n
+#CONFIG_PACKAGE_luci-app-tailscale=n
 CONFIG_PACKAGE_luci-app-advancedplus=n
 CONFIG_PACKAGE_luci-app-zerotier=n
 CONFIG_PACKAGE_luci-app-ddns-go=n
@@ -154,6 +154,7 @@ CONFIG_PACKAGE_bind-dig=y
 CONFIG_PACKAGE_bind-nslookup=y
 #CONFIG_PACKAGE_kmod-ath10k=y
 #CONFIG_PACKAGE_kmod-ath10k-ct=y
+
 
 
 
