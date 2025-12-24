@@ -45,11 +45,11 @@ jobs:
       #默认主题
       WRT_THEME: argon
       #默认主机名
-      WRT_NAME: DAE-WRT
+      WRT_NAME: QWRT
       #默认WIFI名称
-      WRT_SSID: DAE-WRT
+      WRT_SSID: 123
       #默认WIFI密码
-      WRT_WORD: 12345678
+      WRT_WORD: 09161209
       #默认地址
       WRT_IP: 192.168.10.1
       #默认密码，仅作提示，修改无用
@@ -66,3 +66,4 @@ jobs:
       WRT_TEST: ${{inputs.TEST}}
 
       CI_NAME: ${{github.workflow}}
+
