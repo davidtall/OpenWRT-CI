@@ -428,6 +428,7 @@ jobs:
         run: |
           . $GITHUB_WORKSPACE/Scripts/retry.sh
           TAG="${CI_NAME}-${WRT_CONFIG}_${WRT_DATE}"
+          RELEASE_PREFIX="${CI_NAME}-"
           NOTES_FILE="$RUNNER_TEMP/release-notes.txt"
 
           cat > "$NOTES_FILE" <<EOF
@@ -461,11 +462,17 @@ jobs:
             exit 1
           }
 
-          if gh release view -R "$GITHUB_REPOSITORY" "$TAG" >/dev/null 2>&1; then
-            gh release edit -R "$GITHUB_REPOSITORY" "$TAG" --title "$TAG" --notes-file "$NOTES_FILE"
-          else
-            retry_cmd 5 15 gh release create -R "$GITHUB_REPOSITORY" "$TAG" --title "$TAG" --notes-file "$NOTES_FILE"
-          fi
+          while IFS= read -r old_tag; do
+            [ -n "$old_tag" ] || continue
+            case "$old_tag" in
+              "${RELEASE_PREFIX}"*)
+                echo "Deleting old release: $old_tag"
+                retry_cmd 5 15 gh release delete -R "$GITHUB_REPOSITORY" "$old_tag" --yes --cleanup-tag
+                ;;
+            esac
+          done < <(gh release list -R "$GITHUB_REPOSITORY" --limit 1000 --json tagName --jq '.[].tagName')
+
+          retry_cmd 5 15 gh release create -R "$GITHUB_REPOSITORY" "$TAG" --title "$TAG" --notes-file "$NOTES_FILE"
 
           for asset in "${assets[@]}"; do
             retry_cmd 5 15 gh release upload -R "$GITHUB_REPOSITORY" "$TAG" "$asset" --clobber
