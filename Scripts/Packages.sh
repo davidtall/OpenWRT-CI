@@ -112,7 +112,7 @@ UPDATE_PACKAGE "quickfile" "sbwml/luci-app-quickfile" "main"
 UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "luci-app-timewol luci-app-wolplus"
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
 
-# 与上游对齐 daed 包源，但继续通过 Config/GENERAL.txt 保持默认禁用。
+# 与上游对齐 daed 包源。
 UPDATE_PACKAGE "luci-app-daed" "QiuSimons/luci-app-daed" "master"
 UPDATE_PACKAGE "luci-app-pushbot" "zzsj0928/luci-app-pushbot" "master"
 UPDATE_PACKAGE "luci-app-lucky" "sirpdboy/luci-app-lucky" "main"
@@ -183,9 +183,8 @@ cp -r $GITHUB_WORKSPACE/package/* ./
 rm -f luci-app-tailscale-community/root/etc/config/tailscale
 rm -f luci-app-tailscale-community/root/etc/init.d/tailscale
 #修复daed/Makefile
-# 临时禁用 daed 时一并跳过自定义 Makefile 覆盖。
-# rm -rf luci-app-daed/daed/Makefile && cp -r $GITHUB_WORKSPACE/patches/daed/Makefile luci-app-daed/daed/
-# cat luci-app-daed/daed/Makefile
+rm -rf luci-app-daed/daed/Makefile && cp -r $GITHUB_WORKSPACE/patches/daed/Makefile luci-app-daed/daed/
+cat luci-app-daed/daed/Makefile
 #修复libubox报错
 #sed -i '/include $(INCLUDE_DIR)\/cmake.mk/a PKG_BUILD_FLAGS:=no-werror' ../package/libs/libubox/Makefile
 #sed -i 's|TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include|& -Wno-error=format-nonliteral -Wno-format-nonliteral|' ../package/libs/libubox/Makefile
