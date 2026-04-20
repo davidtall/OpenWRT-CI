@@ -9,13 +9,15 @@ PKG_VERSION:=$(shell date "+%Y.%m.%d")
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/daeuniverse/dae.git
+#PKG_SOURCE_URL:=https://github.com/daeuniverse/dae.git
 #PKG_SOURCE_URL:=https://github.com/LostAttractor/dae.git
-OUTBOUND_URL:=https://github.com/LostAttractor/outbound.git
-GIT_BRANCH:=main
+PKG_SOURCE_URL:=https://github.com/ppdragon16/dae.git
+#OUTBOUND_URL:=https://github.com/LostAttractor/outbound.git
+OUTBOUND_URL:=https://github.com/ppdragon16/outbound.git
+GIT_BRANCH:=next
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(shell git ls-remote $(PKG_SOURCE_URL) $(GIT_BRANCH) | cut -c1-7)
-PKG_MIRROR_HASH:=skip
+PKG_MIRROR_HASH:=
 
 PKG_LICENSE:=AGPL-3.0-only
 PKG_LICENSE_FILE:=LICENSE
@@ -80,6 +82,7 @@ endef
 define Build/Prepare
 	( \
 		rm -rf $(PKG_BUILD_DIR) && git clone $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) && git -C $(PKG_BUILD_DIR) checkout $(GIT_BRANCH) ; \
+		rm -rf outbound && git clone $(OUTBOUND_URL) $(PKG_BUILD_DIR)/../outbound && git -C $(PKG_BUILD_DIR)/../outbound checkout $(GIT_BRANCH) ; \
 		pushd $(PKG_BUILD_DIR) ; \
 		git submodule update --init ; \
 		go mod tidy ; \
