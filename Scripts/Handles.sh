@@ -18,6 +18,14 @@ preload_nikki_geodata() {
 
 preload_nikki_geodata
 
+# 修复 procd 源码镜像 404：优先使用 GitHub 镜像仓库。
+PROCD_MAKEFILE="../package/system/procd/Makefile"
+if [ -f "$PROCD_MAKEFILE" ]; then
+	sed -i 's#^PKG_SOURCE_URL:=.*procd\.git$#PKG_SOURCE_URL:=https://github.com/openwrt/procd.git#g' "$PROCD_MAKEFILE"
+	grep -q '^PKG_SOURCE_URL:=https://github.com/openwrt/procd.git$' "$PROCD_MAKEFILE" && \
+		cd "$PKG_PATH" && echo "procd source url has been switched to GitHub mirror!"
+fi
+
 # 修复 sbwml/luci-app-mosdns 的 ES6+ 语法与 LuCI jsmin 的兼容问题。
 MOSDNS_ROOT="./luci-app-mosdns"
 if [ -d "$MOSDNS_ROOT" ]; then
