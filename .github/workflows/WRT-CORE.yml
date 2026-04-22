@@ -59,6 +59,7 @@ on:
         default: 360
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   WRT_CONFIG: ${{inputs.WRT_CONFIG}}
   WRT_THEME: ${{inputs.WRT_THEME}}
   WRT_NAME: ${{inputs.WRT_NAME}}
@@ -428,7 +429,7 @@ jobs:
         run: |
           . $GITHUB_WORKSPACE/Scripts/retry.sh
           TAG="${CI_NAME}-${WRT_CONFIG}_${WRT_DATE}"
-          RELEASE_PREFIX="${CI_NAME}-"
+          RELEASE_PREFIX="${CI_NAME}-${WRT_CONFIG}_"
           NOTES_FILE="$RUNNER_TEMP/release-notes.txt"
 
           cat > "$NOTES_FILE" <<EOF
