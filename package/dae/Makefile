@@ -31,11 +31,10 @@ GO_PKG:=github.com/daeuniverse/dae
 GO_PKG_EXCLUDES:=control/kern/tests
 GO_PKG_LDFLAGS:= \
 	-s -w -buildid= \
-	-linkmode external -extldflags '-static -Wl,-s' \
-	-X '$(GO_PKG)/db.AppDescription=$(PKG_NAME) is a high-performance transparent proxy solution.'
+	-linkmode external -extldflags '-static -Wl,-s'
 GO_PKG_LDFLAGS_X:= \
-	$(GO_PKG)/db.AppName=$(PKG_NAME) \
-	$(GO_PKG)/db.Version=$(PKG_SOURCE_VERSION)
+	$(GO_PKG)/cmd.Version=$(PKG_SOURCE_VERSION) \
+	$(GO_PKG)/common/consts.MaxMatchSetLen_=1024
 GO_PKG_TAGS:=embedallowed,trace
 
 include $(INCLUDE_DIR)/package.mk
@@ -47,6 +46,7 @@ GO_PKG_BUILD_VARS+= \
 
 GO_PKG_TARGET_VARS+= \
 	CGO_LDFLAGS="$(TARGET_LDFLAGS) -static -Wl,-s" \
+	CGO_ENABLED=1 \
 	GOEXPERIMENT=newinliner,simd
 
 TAR_CMD=$(HOST_TAR) -C $(BUILD_DIR)/ $(TAR_OPTIONS)
