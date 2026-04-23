@@ -9,9 +9,9 @@ PKG_VERSION:=$(shell date "+%Y.%m.%d")
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-#PKG_SOURCE_URL:=https://github.com/daeuniverse/dae.git
-#PKG_SOURCE_URL:=https://github.com/LostAttractor/dae.git
 PKG_SOURCE_URL:=https://github.com/daeuniverse/dae.git
+#PKG_SOURCE_URL:=https://github.com/LostAttractor/dae.git
+#PKG_SOURCE_URL:=https://github.com/ppdragon16/dae.git
 #OUTBOUND_URL:=https://github.com/LostAttractor/outbound.git
 OUTBOUND_URL:=https://github.com/LostAttractor/outbound.git
 GIT_BRANCH:=main
@@ -29,19 +29,26 @@ PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/daeuniverse/dae
 GO_PKG_EXCLUDES:=control/kern/tests
+GO_PKG_LDFLAGS:= \
+	-s -w -buildid= \
+	-linkmode external -extldflags '-static -Wl,-s' \
+	-X '$(GO_PKG)/db.AppDescription=$(PKG_NAME) is a high-performance transparent proxy solution.'
 GO_PKG_LDFLAGS_X:= \
-	$(GO_PKG)/cmd.Version=$(PKG_SOURCE_VERSION) \
-	$(GO_PKG)/common/consts.MaxMatchSetLen_=1024
-GO_PKG_TAGS:=embedallowed
-GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) \
-	CGO_ENABLED=1 \
-	GOEXPERIMENT=greenteagc
+	$(GO_PKG)/db.AppName=$(PKG_NAME) \
+	$(GO_PKG)/db.Version=$(PKG_SOURCE_VERSION)
+GO_PKG_TAGS:=embedallowed,trace
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/bpf.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
-GO_PKG_DEFAULT_LDFLAGS:=-w -s -extldflags "-static"
+GO_PKG_BUILD_VARS+= \
+	GOFLAGS="-trimpath -buildvcs=false -pgo=auto"
+
+GO_PKG_TARGET_VARS+= \
+	CGO_LDFLAGS="$(TARGET_LDFLAGS) -static -Wl,-s" \
+	GOEXPERIMENT=newinliner,simd
+
 TAR_CMD=$(HOST_TAR) -C $(BUILD_DIR)/ $(TAR_OPTIONS)
 
 define Package/dae/Default
