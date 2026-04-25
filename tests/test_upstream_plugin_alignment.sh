@@ -35,6 +35,29 @@ grep -q '^UPDATE_PACKAGE "luci-app-daed" "QiuSimons/luci-app-daed" "master"$' "$
   exit 1
 }
 
+grep -q '^rm -rf luci-app-daed/daed/Makefile && cp -r \$GITHUB_WORKSPACE/patches/daed/Makefile luci-app-daed/daed/$' "$PACKAGES" || {
+  echo "Packages.sh does not apply the daed Makefile web build fix"
+  exit 1
+}
+
+DAED_MAKEFILE="$ROOT_DIR/patches/daed/Makefile"
+[ -f "$DAED_MAKEFILE" ] || { echo "missing daed Makefile patch"; exit 1; }
+
+grep -q '^PKG_VERSION:=2026\.02\.20$' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch is not aligned to the latest daed package version"
+  exit 1
+}
+
+grep -q 'pnpm build --filter daed' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not build the daed web frontend"
+  exit 1
+}
+
+grep -q 'apps/web/dist/\*' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not copy the current daed web dist output"
+  exit 1
+}
+
 grep -q 'UPDATE_PACKAGE "gecoosac" "laipeng668/luci-app-gecoosac" "main"' "$PACKAGES" || {
   echo "Packages.sh does not align gecoosac to the upstream source"
   exit 1
