@@ -11,8 +11,23 @@ grep -q '^PKG_MIRROR_HASH:=skip$' "$DAE_MAKEFILE" || {
 	exit 1
 }
 
-grep -q 'git -C $(PKG_BUILD_DIR) checkout $(PKG_SOURCE_VERSION)' "$DAE_MAKEFILE" || {
-	echo "dae Build/Prepare does not checkout PKG_SOURCE_VERSION"
+grep -q 'git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR)' "$DAE_MAKEFILE" || {
+	echo "dae Build/Prepare does not clone the configured kdae branch"
+	exit 1
+}
+
+grep -q 'cut -f1' "$DAE_MAKEFILE" || {
+	echo "dae Makefile does not resolve the full source revision"
+	exit 1
+}
+
+grep -q 'go mod edit -replace github.com/daeuniverse/outbound=../outbound' "$DAE_MAKEFILE" || {
+	echo "dae Build/Prepare does not replace outbound with the kdae fork"
+	exit 1
+}
+
+grep -q 'go mod edit -replace github.com/daeuniverse/quic-go=../quic-go' "$DAE_MAKEFILE" || {
+	echo "dae Build/Prepare does not replace quic-go with the kdae fork"
 	exit 1
 }
 

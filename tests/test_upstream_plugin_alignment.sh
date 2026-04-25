@@ -53,6 +53,11 @@ grep -q 'pnpm build --filter daed' "$DAED_MAKEFILE" || {
   exit 1
 }
 
+grep -q 'pnpm install --no-frozen-lockfile' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not tolerate upstream pnpm lockfile/catalog drift"
+  exit 1
+}
+
 grep -q 'apps/web/dist/\*' "$DAED_MAKEFILE" || {
   echo "daed Makefile patch does not copy the current daed web dist output"
   exit 1

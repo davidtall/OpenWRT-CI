@@ -9,12 +9,9 @@ PKG_VERSION:=$(shell date "+%Y.%m.%d")
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/daeuniverse/dae.git
-#PKG_SOURCE_URL:=https://github.com/LostAttractor/dae.git
-#PKG_SOURCE_URL:=https://github.com/ppdragon16/dae.git
-#OUTBOUND_URL:=https://github.com/LostAttractor/outbound.git
-OUTBOUND_URL:=https://github.com/LostAttractor/outbound.git
-GIT_BRANCH:=main
+#PKG_SOURCE_URL:=https://github.com/daeuniverse/dae.git
+PKG_SOURCE_URL:=https://github.com/olicesx/dae.git
+GIT_BRANCH:=kdae
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(shell git ls-remote $(PKG_SOURCE_URL) $(GIT_BRANCH) | cut -f1)
 PKG_MIRROR_HASH:=skip
@@ -88,8 +85,13 @@ endef
 
 define Build/Prepare
 	( \
-		rm -rf $(PKG_BUILD_DIR) && git clone $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) && git -C $(PKG_BUILD_DIR) checkout $(PKG_SOURCE_VERSION) ; \
+		rm -rf $(PKG_BUILD_DIR) && git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) && git -C $(PKG_BUILD_DIR) checkout $(PKG_SOURCE_VERSION) ; \
+		rm -rf $(PKG_BUILD_DIR)/../outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git $(PKG_BUILD_DIR)/../outbound ; \
+		rm -rf $(PKG_BUILD_DIR)/../quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git $(PKG_BUILD_DIR)/../quic-go ; \
 		pushd $(PKG_BUILD_DIR) ; \
+		go mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
+		go mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
+		go get -u=patch ; \
 		git submodule update --init ; \
 		go mod tidy ; \
 		popd ; \
