@@ -30,7 +30,7 @@ grep -q '^CONFIG_PACKAGE_luci-app-daed=y$' "$GENERAL" || {
   exit 1
 }
 
-grep -q '^UPDATE_PACKAGE "luci-app-daed" "QiuSimons/luci-app-daed" "master"$' "$PACKAGES" || {
+grep -q '^UPDATE_PACKAGE "luci-app-daed" "QiuSimons/luci-app-daed" "kix"$' "$PACKAGES" || {
   echo "Packages.sh does not align luci-app-daed to the upstream source"
   exit 1
 }
