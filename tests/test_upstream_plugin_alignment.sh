@@ -43,7 +43,7 @@ grep -q '^rm -rf luci-app-daed/daed/Makefile && cp -r \$GITHUB_WORKSPACE/patches
 DAED_MAKEFILE="$ROOT_DIR/patches/daed/Makefile"
 [ -f "$DAED_MAKEFILE" ] || { echo "missing daed Makefile patch"; exit 1; }
 
-grep -q '^PKG_VERSION:=2026\.02\.20$' "$DAED_MAKEFILE" || {
+grep -q '^PKG_VERSION:=2026\.04\.25$' "$DAED_MAKEFILE" || {
   echo "daed Makefile patch is not aligned to the latest daed package version"
   exit 1
 }

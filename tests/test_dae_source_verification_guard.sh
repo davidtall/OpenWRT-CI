@@ -21,12 +21,22 @@ grep -q 'cut -f1' "$DAE_MAKEFILE" || {
 	exit 1
 }
 
-grep -q 'go mod edit -replace github.com/daeuniverse/outbound=../outbound' "$DAE_MAKEFILE" || {
+grep -q 'rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound' "$DAE_MAKEFILE" || {
+	echo "dae Build/Prepare does not clone the kdae outbound fork inside the source tree"
+	exit 1
+}
+
+grep -q 'go mod edit -replace github.com/daeuniverse/outbound=./outbound' "$DAE_MAKEFILE" || {
 	echo "dae Build/Prepare does not replace outbound with the kdae fork"
 	exit 1
 }
 
-grep -q 'go mod edit -replace github.com/daeuniverse/quic-go=../quic-go' "$DAE_MAKEFILE" || {
+grep -q 'rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go' "$DAE_MAKEFILE" || {
+	echo "dae Build/Prepare does not clone the kdae quic-go fork inside the source tree"
+	exit 1
+}
+
+grep -q 'go mod edit -replace github.com/daeuniverse/quic-go=./quic-go' "$DAE_MAKEFILE" || {
 	echo "dae Build/Prepare does not replace quic-go with the kdae fork"
 	exit 1
 }

@@ -86,11 +86,11 @@ endef
 define Build/Prepare
 	( \
 		rm -rf $(PKG_BUILD_DIR) && git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) && git -C $(PKG_BUILD_DIR) checkout $(PKG_SOURCE_VERSION) ; \
-		rm -rf $(PKG_BUILD_DIR)/../outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git $(PKG_BUILD_DIR)/../outbound ; \
-		rm -rf $(PKG_BUILD_DIR)/../quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git $(PKG_BUILD_DIR)/../quic-go ; \
 		pushd $(PKG_BUILD_DIR) ; \
-		go mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
-		go mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
+		rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound ; \
+		rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go ; \
+		go mod edit -replace github.com/daeuniverse/outbound=./outbound ; \
+		go mod edit -replace github.com/daeuniverse/quic-go=./quic-go ; \
 		go get -u=patch ; \
 		git submodule update --init ; \
 		go mod tidy ; \
