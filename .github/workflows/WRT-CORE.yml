@@ -190,7 +190,8 @@ jobs:
         run: |
           cd ./wrt/
 
-          make -j$(nproc) || make -j1 V=s
+          #make -j$(nproc) || make -j1 V=s
+          make package/luci-app-daed/compile V=99
 
       - name: Delete Old Cache
         run: |
