@@ -131,7 +131,7 @@ define Build/Prepare
 		export XDG_CONFIG_HOME="$(DAED_BUILD_DIR)/.node_tmp/config" ; \
 		npm install -g pnpm ; \
 		pushd $(DAED_BUILD_DIR) ; \
-			pnpm install ; \
+			pnpm install --no-frozen-lockfile ; \
 			pnpm build --filter daed ; \
 		popd ; \
 		mkdir -p $(PKG_BUILD_DIR)/webrender/web ; \
