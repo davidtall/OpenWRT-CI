@@ -40,6 +40,11 @@ grep -q '^rm -rf luci-app-daed/daed/Makefile && cp -r \$GITHUB_WORKSPACE/patches
   exit 1
 }
 
+grep -q 'procd_set_param command' "$PACKAGES" || {
+  echo "Packages.sh does not patch luci_daed init script command placement"
+  exit 1
+}
+
 DAED_MAKEFILE="$ROOT_DIR/patches/daed/Makefile"
 [ -f "$DAED_MAKEFILE" ] || { echo "missing daed Makefile patch"; exit 1; }
 
