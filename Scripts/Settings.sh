@@ -39,7 +39,7 @@ sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
 vlmcsd_patches="./feeds/packages/net/vlmcsd/patches/"
 mkdir -p $vlmcsd_patches && cp -f ../patches/001-fix_compile_with_ccache.patch $vlmcsd_patches
 
-sed -i 's/mirrors.vsean.net/mirror.nju.edu.cn/g' ./package/emortal/default-settings/files/99-default-settings-chinese
+sed -i 's/mirrors.vsean.net\/openwrt/mirror.nju.edu.cn\/immortalwrt/g' ./package/emortal/default-settings/files/99-default-settings-chinese
 
 #配置文件修改
 echo "CONFIG_PACKAGE_luci=y" >> ./.config
