@@ -73,6 +73,21 @@ grep -q 'rm -rf $(PKG_BUILD_DIR) ; \\' "$DAED_MAKEFILE" || {
   exit 1
 }
 
+grep -q 'currentRuntimeStatsStore' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not skip obsolete runtime stats patch on newer dae-core"
+  exit 1
+}
+
+grep -q 'patch -p2 --forward --batch' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not apply runtime stats fallback patch non-interactively with the right strip level"
+  exit 1
+}
+
+if grep -q 'fix-runtime-stats.patch | patch -p1' "$DAED_MAKEFILE"; then
+  echo "daed Makefile still applies runtime stats patch with the wrong strip level"
+  exit 1
+fi
+
 grep -q 'UPDATE_PACKAGE "gecoosac" "laipeng668/luci-app-gecoosac" "main"' "$PACKAGES" || {
   echo "Packages.sh does not align gecoosac to the upstream source"
   exit 1

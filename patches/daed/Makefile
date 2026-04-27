@@ -115,7 +115,9 @@ define Build/Prepare
 		rm -rf $(DAED_BUILD_DIR)/quic-go ; \
 		git clone --depth=1 -b main https://github.com/olicesx/quic-go.git $(DAED_BUILD_DIR)/quic-go ; \
 		pushd $(PKG_BUILD_DIR)/dae-core ; \
-			wget -qO - https://github.com/QiuSimons/luci-app-daed/raw/refs/heads/kix/patchset/0001-fix-runtime-stats.patch | patch -p1 ; \
+			if ! grep -q "currentRuntimeStatsStore" control/runtime_stats.go ; then \
+				wget -qO - https://github.com/QiuSimons/luci-app-daed/raw/refs/heads/kix/patchset/0001-fix-runtime-stats.patch | patch -p2 --forward --batch ; \
+			fi ; \
 			git submodule update --init ; \
 			go get -u=patch ; \
 			go mod tidy ; \
