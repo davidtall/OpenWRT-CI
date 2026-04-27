@@ -68,6 +68,11 @@ grep -q 'apps/web/dist/\*' "$DAED_MAKEFILE" || {
   exit 1
 }
 
+grep -q 'rm -rf $(PKG_BUILD_DIR) ; \\' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not remove stale or extracted wing directory before cloning"
+  exit 1
+}
+
 grep -q 'UPDATE_PACKAGE "gecoosac" "laipeng668/luci-app-gecoosac" "main"' "$PACKAGES" || {
   echo "Packages.sh does not align gecoosac to the upstream source"
   exit 1
