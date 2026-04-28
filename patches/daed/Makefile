@@ -133,10 +133,11 @@ define Build/Prepare
 		wget -qO - "$(NODE_URL)" | tar -xJ -C $(DAED_BUILD_DIR)/.node_tmp --strip-components=1 ; \
 		export PATH="$(DAED_BUILD_DIR)/.node_tmp/bin:$$$$PATH" ; \
 		export XDG_CONFIG_HOME="$(DAED_BUILD_DIR)/.node_tmp/config" ; \
+		export HUSKY=0 ; \
 		npm install -g pnpm ; \
 		pushd $(DAED_BUILD_DIR) ; \
 			pnpm install --no-frozen-lockfile ; \
-			pnpm build --filter daed ; \
+			pnpm --filter daed... build ; \
 		popd ; \
 		mkdir -p $(PKG_BUILD_DIR)/webrender/web ; \
 		cp -rf $(DAED_BUILD_DIR)/apps/web/dist/* $(PKG_BUILD_DIR)/webrender/web ; \

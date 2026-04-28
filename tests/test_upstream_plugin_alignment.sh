@@ -53,7 +53,12 @@ grep -q '^PKG_VERSION:=2026\.04\.25$' "$DAED_MAKEFILE" || {
   exit 1
 }
 
-grep -q 'pnpm build --filter daed' "$DAED_MAKEFILE" || {
+grep -q 'HUSKY=0' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not disable husky hooks during CI web build"
+  exit 1
+}
+
+grep -q 'pnpm --filter daed\.\.\. build' "$DAED_MAKEFILE" || {
   echo "daed Makefile patch does not build the daed web frontend"
   exit 1
 }
