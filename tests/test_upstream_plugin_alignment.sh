@@ -68,7 +68,12 @@ grep -q 'pnpm install --no-frozen-lockfile' "$DAED_MAKEFILE" || {
   exit 1
 }
 
-grep -q 'apps/web/dist/\*' "$DAED_MAKEFILE" || {
+grep -Fq '[ ! -d "$(DAED_BUILD_DIR)/apps/web/dist" ]' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch does not validate the current daed web dist output"
+  exit 1
+}
+
+grep -Fq 'cp -a $(DAED_BUILD_DIR)/apps/web/dist/.' "$DAED_MAKEFILE" || {
   echo "daed Makefile patch does not copy the current daed web dist output"
   exit 1
 }
