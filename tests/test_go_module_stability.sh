@@ -13,10 +13,20 @@ grep -q 'GOPROXY=https://proxy.golang.org|https://goproxy.cn|direct' "$WORKFLOW"
   exit 1
 }
 
-grep -q 'GOSUMDB=off' "$WORKFLOW" || {
-  echo "workflow missing GOSUMDB override"
+grep -q 'go env -w GOPROXY="https://proxy.golang.org|https://goproxy.cn|direct"' "$INIT_SCRIPT" || {
+  echo "init script missing quoted GOPROXY setting"
   exit 1
 }
+
+grep -q 'GOSUMDB=sum.golang.org' "$WORKFLOW" || {
+  echo "workflow missing GOSUMDB sum.golang.org export"
+  exit 1
+}
+
+if grep -q 'GOSUMDB=off' "$WORKFLOW"; then
+  echo "workflow disables GOSUMDB, which breaks Go toolchain downloads"
+  exit 1
+fi
 
 grep -q './wrt/dl/go-mod-cache' "$WORKFLOW" || {
   echo "workflow missing go mod cache path"
@@ -28,9 +38,14 @@ grep -q './wrt/tmp/go-build' "$WORKFLOW" || {
   exit 1
 }
 
-grep -q 'go env -w GOSUMDB=off' "$INIT_SCRIPT" || {
-  echo "init script missing GOSUMDB setting"
+grep -q 'go env -w GOSUMDB=sum.golang.org' "$INIT_SCRIPT" || {
+  echo "init script missing GOSUMDB sum.golang.org setting"
   exit 1
 }
+
+if grep -q 'go env -w GOSUMDB=off' "$INIT_SCRIPT"; then
+  echo "init script disables GOSUMDB, which breaks Go toolchain downloads"
+  exit 1
+fi
 
 echo "go module stability test passed"

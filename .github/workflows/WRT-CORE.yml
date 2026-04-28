@@ -211,9 +211,9 @@ jobs:
       - name: Configure Go Module Access
         run: |
           echo "GOPROXY=https://proxy.golang.org|https://goproxy.cn|direct" >> $GITHUB_ENV
-          echo "GOSUMDB=off" >> $GITHUB_ENV
+          echo "GOSUMDB=sum.golang.org" >> $GITHUB_ENV
           echo "GOPROXY=https://proxy.golang.org|https://goproxy.cn|direct"
-          echo "GOSUMDB=off"
+          echo "GOSUMDB=sum.golang.org"
       - name: Clone Code
         run: |
           . $GITHUB_WORKSPACE/Scripts/retry.sh
