@@ -52,6 +52,11 @@ if [ -n "$WRT_PACKAGE" ]; then
 	echo -e "$WRT_PACKAGE" >> ./.config
 fi
 
+# 强制关闭在部分 feed 组合里会触发 LuCI/APK 打包失败的 ramfree。
+sed -i '/^CONFIG_PACKAGE_luci-app-ramfree=/d' ./.config
+sed -i '/^# CONFIG_PACKAGE_luci-app-ramfree is not set$/d' ./.config
+echo "# CONFIG_PACKAGE_luci-app-ramfree is not set" >> ./.config
+
 #高通平台调整
 DTS_PATH="./target/linux/qualcommax/dts/"
 if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
