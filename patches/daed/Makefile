@@ -134,15 +134,22 @@ define Build/Prepare
 			pnpm install --no-frozen-lockfile ; \
 			pnpm --filter daed... build ; \
 		popd ; \
-		if [ ! -d "$(DAED_BUILD_DIR)/apps/web/dist" ] || [ -z "$$(find "$(DAED_BUILD_DIR)/apps/web/dist" -type f -print -quit)" ]; then \
+		if [ ! -d "$(DAED_BUILD_DIR)/apps/web/dist" ]; then \
+			echo "ERROR: daed web dist directory is missing at $(DAED_BUILD_DIR)/apps/web/dist" ; \
+			exit 1 ; \
+		fi ; \
+		find "$(DAED_BUILD_DIR)/apps/web/dist" -type f -print > "$(DAED_BUILD_DIR)/.web-dist-files" ; \
+		if [ ! -s "$(DAED_BUILD_DIR)/.web-dist-files" ]; then \
 			echo "ERROR: daed web build completed without dist files at $(DAED_BUILD_DIR)/apps/web/dist" ; \
-			find "$(DAED_BUILD_DIR)" -path "*/apps/web/dist/*" -type f | head -20 ; \
+			find "$(DAED_BUILD_DIR)" -path "*/apps/web/dist/*" -type f -print > "$(DAED_BUILD_DIR)/.web-dist-diagnostics" ; \
+			sed -n '1,20p' "$(DAED_BUILD_DIR)/.web-dist-diagnostics" ; \
 			exit 1 ; \
 		fi ; \
 		rm -rf $(PKG_BUILD_DIR)/webrender/web ; \
 		mkdir -p $(PKG_BUILD_DIR)/webrender/web ; \
 		cp -a $(DAED_BUILD_DIR)/apps/web/dist/. $(PKG_BUILD_DIR)/webrender/web/ ; \
-		test -n "$$(find $(PKG_BUILD_DIR)/webrender/web -type f -print -quit)" || { echo "ERROR: daed web assets were not generated"; exit 1; } ; \
+		find $(PKG_BUILD_DIR)/webrender/web -type f -print > "$(DAED_BUILD_DIR)/.webrender-files" ; \
+		test -s "$(DAED_BUILD_DIR)/.webrender-files" || { echo "ERROR: daed web assets were not generated"; exit 1; } ; \
 		find $(PKG_BUILD_DIR)/webrender/web -name "*.map" -type f -delete ; \
 		find $(PKG_BUILD_DIR)/webrender/web -type f -size +4k ! -name "*.gz" ! -name "*.woff"  ! -name "*.woff2" -exec sh -c '\
 			gzip -9 -k "{}"; \

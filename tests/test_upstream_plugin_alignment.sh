@@ -73,6 +73,11 @@ grep -Fq '[ ! -d "$(DAED_BUILD_DIR)/apps/web/dist" ]' "$DAED_MAKEFILE" || {
   exit 1
 }
 
+grep -Fq 'find "$(DAED_BUILD_DIR)/apps/web/dist" -type f -print > "$(DAED_BUILD_DIR)/.web-dist-files"' "$DAED_MAKEFILE" || {
+  echo "daed Makefile patch still relies on fragile find -quit or command substitution checks"
+  exit 1
+}
+
 grep -Fq 'cp -a $(DAED_BUILD_DIR)/apps/web/dist/.' "$DAED_MAKEFILE" || {
   echo "daed Makefile patch does not copy the current daed web dist output"
   exit 1
