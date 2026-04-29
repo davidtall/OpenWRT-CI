@@ -48,7 +48,7 @@ grep -q 'procd_set_param command' "$PACKAGES" || {
 DAED_MAKEFILE="$ROOT_DIR/patches/daed/Makefile"
 [ -f "$DAED_MAKEFILE" ] || { echo "missing daed Makefile patch"; exit 1; }
 
-grep -q '^PKG_VERSION:=2026\.04\.25$' "$DAED_MAKEFILE" || {
+grep -Fq 'PKG_VERSION:=2026.04.25' "$DAED_MAKEFILE" || {
   echo "daed Makefile patch is not aligned to the latest daed package version"
   exit 1
 }

@@ -97,6 +97,7 @@ endef
 NODE_VERSION:=v24.12.0
 NODE_DIST:=node-$(NODE_VERSION)-linux-x64
 NODE_URL:=https://nodejs.org/dist/$(NODE_VERSION)/$(NODE_DIST).tar.xz
+HOST_GO:=$(STAGING_DIR_HOSTPKG)/bin/go
 
 define Build/Prepare
 	( \
@@ -119,14 +120,14 @@ define Build/Prepare
 				wget -qO - https://github.com/QiuSimons/luci-app-daed/raw/refs/heads/kix/patchset/0001-fix-runtime-stats.patch | patch -p2 --forward --batch ; \
 			fi ; \
 			git submodule update --init ; \
-			go get -u=patch ; \
-			go mod tidy ; \
+			$(HOST_GO) get -u=patch ; \
+			$(HOST_GO) mod tidy ; \
 		popd ; \
 		pushd $(PKG_BUILD_DIR) ; \
-			go mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
-			go mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
-			go get -u=patch ; \
-			go mod tidy ; \
+			$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
+			$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
+			$(HOST_GO) get -u=patch ; \
+			$(HOST_GO) mod tidy ; \
 			wget -qO default.pgo "https://github.com/QiuSimons/luci-app-dae/raw/refs/heads/kix/dae/pprof/default.pgo" ; \
 		popd ; \
 		mkdir -p $(DAED_BUILD_DIR)/.node_tmp/config ; \
@@ -174,7 +175,7 @@ define Build/Compile
 		$(GO_GENERAL_BUILD_CONFIG_VARS) \
 		$(GO_PKG_BUILD_CONFIG_VARS) \
 		$(GO_PKG_BUILD_VARS) ; \
-		go generate ./... ; \
+		$(HOST_GO) generate ./... ; \
 		cd dae-core ; \
 		export \
 		BPF_CLANG="$(CLANG)" \
@@ -182,8 +183,8 @@ define Build/Compile
 		BPF_CFLAGS="$(DAE_CFLAGS)" \
 		BPF_TARGET="bpfel,bpfeb" \
 		BPF_TRACE_TARGET="$(GO_ARCH)" ; \
-		go generate ./control/control.go ; \
-		go generate ./trace/trace.go ; \
+		$(HOST_GO) generate ./control/control.go ; \
+		$(HOST_GO) generate ./trace/trace.go ; \
 		popd ; \
 	)
 	$(call GoPackage/Build/Compile)
