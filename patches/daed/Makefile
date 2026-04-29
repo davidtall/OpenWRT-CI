@@ -97,7 +97,7 @@ endef
 NODE_VERSION:=v24.12.0
 NODE_DIST:=node-$(NODE_VERSION)-linux-x64
 NODE_URL:=https://nodejs.org/dist/$(NODE_VERSION)/$(NODE_DIST).tar.xz
-HOST_GO=$(firstword $(wildcard $(STAGING_DIR_HOSTPKG)/lib/go-*/bin/go $(STAGING_DIR_HOSTPKG)/bin/go))
+DAED_HOST_GO=$(firstword $(wildcard $(STAGING_DIR_HOSTPKG)/lib/go-*/bin/go $(STAGING_DIR_HOSTPKG)/bin/go))
 
 define Build/Prepare
 	( \
@@ -170,14 +170,14 @@ define Build/Compile
 		$(GO_PKG_BUILD_VARS) ; \
 		pushd $(PKG_BUILD_DIR) ; \
 			pushd $(PKG_BUILD_DIR)/dae-core ; \
-				$(HOST_GO) get -u=patch ; \
-				$(HOST_GO) mod tidy ; \
+				$(DAED_HOST_GO) get -u=patch ; \
+				$(DAED_HOST_GO) mod tidy ; \
 			popd ; \
-			$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
-			$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
-			$(HOST_GO) get -u=patch ; \
-			$(HOST_GO) mod tidy ; \
-			$(HOST_GO) generate ./... ; \
+			$(DAED_HOST_GO) mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
+			$(DAED_HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
+			$(DAED_HOST_GO) get -u=patch ; \
+			$(DAED_HOST_GO) mod tidy ; \
+			$(DAED_HOST_GO) generate ./... ; \
 			cd dae-core ; \
 			export \
 			BPF_CLANG="$(CLANG)" \
@@ -185,8 +185,8 @@ define Build/Compile
 			BPF_CFLAGS="$(DAE_CFLAGS)" \
 			BPF_TARGET="bpfel,bpfeb" \
 			BPF_TRACE_TARGET="$(GO_ARCH)" ; \
-			$(HOST_GO) generate ./control/control.go ; \
-			$(HOST_GO) generate ./trace/trace.go ; \
+			$(DAED_HOST_GO) generate ./control/control.go ; \
+			$(DAED_HOST_GO) generate ./trace/trace.go ; \
 		popd ; \
 	)
 endef

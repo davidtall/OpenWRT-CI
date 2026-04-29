@@ -6,7 +6,7 @@ DAE_MAKEFILE="$ROOT_DIR/package/dae/Makefile"
 
 [ -f "$DAE_MAKEFILE" ] || { echo "missing dae Makefile"; exit 1; }
 
-grep -Fq 'HOST_GO=$(firstword $(wildcard $(STAGING_DIR_HOSTPKG)/lib/go-*/bin/go $(STAGING_DIR_HOSTPKG)/bin/go))' "$DAE_MAKEFILE" || {
+grep -Fq 'DAE_HOST_GO=$(firstword $(wildcard $(STAGING_DIR_HOSTPKG)/lib/go-*/bin/go $(STAGING_DIR_HOSTPKG)/bin/go))' "$DAE_MAKEFILE" || {
 	echo "dae Makefile does not define an explicit host go binary"
 	exit 1
 }
@@ -44,32 +44,32 @@ if printf '%s\n' "$PREPARE_BLOCK" | grep -Eq 'go (get -u=patch|mod tidy|mod edit
 	exit 1
 fi
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=./outbound' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) mod edit -replace github.com/daeuniverse/outbound=./outbound' || {
 	echo "dae Build/Compile does not replace outbound with the kdae fork"
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go' || {
 	echo "dae Build/Compile does not replace quic-go with the kdae fork"
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) get -u=patch' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) get -u=patch' || {
 	echo "dae Build/Compile does not use host go for go get"
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod tidy' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) mod tidy' || {
 	echo "dae Build/Compile does not use host go for go mod tidy"
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate ./control/control.go' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) generate ./control/control.go' || {
 	echo "dae Build/Compile does not use relative control code generation path"
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate ./trace/trace.go' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) generate ./trace/trace.go' || {
 	echo "dae Build/Compile does not use host go for trace code generation"
 	exit 1
 }
