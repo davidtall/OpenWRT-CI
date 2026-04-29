@@ -47,7 +47,7 @@ GO_PKG_TARGET_VARS+= \
 	GOEXPERIMENT=newinliner,simd
 
 TAR_CMD=$(HOST_TAR) -C $(BUILD_DIR)/ $(TAR_OPTIONS)
-HOST_GO:=$(STAGING_DIR_HOSTPKG)/bin/go
+HOST_GO=$(firstword $(wildcard $(STAGING_DIR_HOSTPKG)/lib/go-*/bin/go $(STAGING_DIR_HOSTPKG)/bin/go))
 
 define Package/dae/Default
   SECTION:=net
@@ -108,12 +108,6 @@ endif
 
 define Build/Compile
 	( \
-		pushd $(PKG_BUILD_DIR) ; \
-			$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=./outbound ; \
-			$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go ; \
-			$(HOST_GO) get -u=patch ; \
-			$(HOST_GO) mod tidy ; \
-		popd ; \
 		export \
 		$(GO_GENERAL_BUILD_CONFIG_VARS) \
 		$(GO_PKG_BUILD_CONFIG_VARS) \
@@ -123,8 +117,14 @@ define Build/Compile
 		BPF_CFLAGS="$(DAE_CFLAGS)" \
 		BPF_TARGET="bpfel,bpfeb" \
 		BPF_TRACE_TARGET="$(GO_ARCH)" ; \
-		$(HOST_GO) generate $(PKG_BUILD_DIR)/control/control.go ; \
-		$(HOST_GO) generate $(PKG_BUILD_DIR)/trace/trace.go ; \
+		pushd $(PKG_BUILD_DIR) ; \
+			$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=./outbound ; \
+			$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go ; \
+			$(HOST_GO) get -u=patch ; \
+			$(HOST_GO) mod tidy ; \
+			$(HOST_GO) generate ./control/control.go ; \
+			$(HOST_GO) generate ./trace/trace.go ; \
+		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
 endef

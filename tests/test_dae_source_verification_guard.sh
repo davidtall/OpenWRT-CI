@@ -6,6 +6,11 @@ DAE_MAKEFILE="$ROOT_DIR/package/dae/Makefile"
 
 [ -f "$DAE_MAKEFILE" ] || { echo "missing dae Makefile"; exit 1; }
 
+grep -Fq 'HOST_GO=$(firstword $(wildcard $(STAGING_DIR_HOSTPKG)/lib/go-*/bin/go $(STAGING_DIR_HOSTPKG)/bin/go))' "$DAE_MAKEFILE" || {
+	echo "dae Makefile does not define an explicit host go binary"
+	exit 1
+}
+
 grep -Fq 'PKG_MIRROR_HASH:=skip' "$DAE_MAKEFILE" || {
 	echo "dae Makefile is missing PKG_MIRROR_HASH:=skip"
 	exit 1
@@ -59,12 +64,12 @@ printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod tidy' || {
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate $(PKG_BUILD_DIR)/control/control.go' || {
-	echo "dae Build/Compile does not use host go for control code generation"
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate ./control/control.go' || {
+	echo "dae Build/Compile does not use relative control code generation path"
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate $(PKG_BUILD_DIR)/trace/trace.go' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate ./trace/trace.go' || {
 	echo "dae Build/Compile does not use host go for trace code generation"
 	exit 1
 }

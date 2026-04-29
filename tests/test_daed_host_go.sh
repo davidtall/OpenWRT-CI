@@ -6,7 +6,7 @@ DAED_MAKEFILE="$ROOT_DIR/patches/daed/Makefile"
 
 [ -f "$DAED_MAKEFILE" ] || { echo "missing daed Makefile patch"; exit 1; }
 
-grep -Fq 'HOST_GO:=$(STAGING_DIR_HOSTPKG)/bin/go' "$DAED_MAKEFILE" || {
+grep -Fq 'HOST_GO=$(firstword $(wildcard $(STAGING_DIR_HOSTPKG)/lib/go-*/bin/go $(STAGING_DIR_HOSTPKG)/bin/go))' "$DAED_MAKEFILE" || {
   echo "daed Makefile does not define an explicit host go binary"
   exit 1
 }
