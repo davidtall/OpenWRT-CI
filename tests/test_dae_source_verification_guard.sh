@@ -6,38 +6,66 @@ DAE_MAKEFILE="$ROOT_DIR/package/dae/Makefile"
 
 [ -f "$DAE_MAKEFILE" ] || { echo "missing dae Makefile"; exit 1; }
 
-grep -q '^PKG_MIRROR_HASH:=skip$' "$DAE_MAKEFILE" || {
+grep -Fq 'PKG_MIRROR_HASH:=skip' "$DAE_MAKEFILE" || {
 	echo "dae Makefile is missing PKG_MIRROR_HASH:=skip"
 	exit 1
 }
 
-grep -q 'git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR)' "$DAE_MAKEFILE" || {
+grep -Fq 'git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR)' "$DAE_MAKEFILE" || {
 	echo "dae Build/Prepare does not clone the configured kdae branch"
 	exit 1
 }
 
-grep -q 'cut -f1' "$DAE_MAKEFILE" || {
+grep -Fq 'cut -f1' "$DAE_MAKEFILE" || {
 	echo "dae Makefile does not resolve the full source revision"
 	exit 1
 }
 
-grep -q 'rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound' "$DAE_MAKEFILE" || {
+grep -Fq 'rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound' "$DAE_MAKEFILE" || {
 	echo "dae Build/Prepare does not clone the kdae outbound fork inside the source tree"
 	exit 1
 }
 
-grep -q 'go mod edit -replace github.com/daeuniverse/outbound=./outbound' "$DAE_MAKEFILE" || {
-	echo "dae Build/Prepare does not replace outbound with the kdae fork"
-	exit 1
-}
-
-grep -q 'rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go' "$DAE_MAKEFILE" || {
+grep -Fq 'rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go' "$DAE_MAKEFILE" || {
 	echo "dae Build/Prepare does not clone the kdae quic-go fork inside the source tree"
 	exit 1
 }
 
-grep -q 'go mod edit -replace github.com/daeuniverse/quic-go=./quic-go' "$DAE_MAKEFILE" || {
-	echo "dae Build/Prepare does not replace quic-go with the kdae fork"
+PREPARE_BLOCK="$(awk '/^define Build\/Prepare/{flag=1; next} /^endef$/{flag=0} flag' "$DAE_MAKEFILE")"
+COMPILE_BLOCK="$(awk '/^define Build\/Compile/{flag=1; next} /^endef$/{flag=0} flag' "$DAE_MAKEFILE")"
+
+if printf '%s\n' "$PREPARE_BLOCK" | grep -Eq 'go (get -u=patch|mod tidy|mod edit|generate )'; then
+	echo "dae Build/Prepare still uses Go commands"
+	exit 1
+fi
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=./outbound' || {
+	echo "dae Build/Compile does not replace outbound with the kdae fork"
+	exit 1
+}
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go' || {
+	echo "dae Build/Compile does not replace quic-go with the kdae fork"
+	exit 1
+}
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) get -u=patch' || {
+	echo "dae Build/Compile does not use host go for go get"
+	exit 1
+}
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod tidy' || {
+	echo "dae Build/Compile does not use host go for go mod tidy"
+	exit 1
+}
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate $(PKG_BUILD_DIR)/control/control.go' || {
+	echo "dae Build/Compile does not use host go for control code generation"
+	exit 1
+}
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate $(PKG_BUILD_DIR)/trace/trace.go' || {
+	echo "dae Build/Compile does not use host go for trace code generation"
 	exit 1
 }
 

@@ -47,6 +47,7 @@ GO_PKG_TARGET_VARS+= \
 	GOEXPERIMENT=newinliner,simd
 
 TAR_CMD=$(HOST_TAR) -C $(BUILD_DIR)/ $(TAR_OPTIONS)
+HOST_GO:=$(STAGING_DIR_HOSTPKG)/bin/go
 
 define Package/dae/Default
   SECTION:=net
@@ -87,13 +88,9 @@ define Build/Prepare
 	( \
 		rm -rf $(PKG_BUILD_DIR) && git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) && git -C $(PKG_BUILD_DIR) checkout $(PKG_SOURCE_VERSION) ; \
 		pushd $(PKG_BUILD_DIR) ; \
-		rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound ; \
-		rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go ; \
-		go mod edit -replace github.com/daeuniverse/outbound=./outbound ; \
-		go mod edit -replace github.com/daeuniverse/quic-go=./quic-go ; \
-		go get -u=patch ; \
-		git submodule update --init ; \
-		go mod tidy ; \
+			rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound ; \
+			rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go ; \
+			git submodule update --init ; \
 		popd ; \
 	)
 endef
@@ -111,6 +108,12 @@ endif
 
 define Build/Compile
 	( \
+		pushd $(PKG_BUILD_DIR) ; \
+			$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=./outbound ; \
+			$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go ; \
+			$(HOST_GO) get -u=patch ; \
+			$(HOST_GO) mod tidy ; \
+		popd ; \
 		export \
 		$(GO_GENERAL_BUILD_CONFIG_VARS) \
 		$(GO_PKG_BUILD_CONFIG_VARS) \
@@ -120,8 +123,8 @@ define Build/Compile
 		BPF_CFLAGS="$(DAE_CFLAGS)" \
 		BPF_TARGET="bpfel,bpfeb" \
 		BPF_TRACE_TARGET="$(GO_ARCH)" ; \
-		go generate $(PKG_BUILD_DIR)/control/control.go ; \
-		go generate $(PKG_BUILD_DIR)/trace/trace.go ; \
+		$(HOST_GO) generate $(PKG_BUILD_DIR)/control/control.go ; \
+		$(HOST_GO) generate $(PKG_BUILD_DIR)/trace/trace.go ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
 endef

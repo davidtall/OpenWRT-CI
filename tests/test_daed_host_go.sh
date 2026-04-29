@@ -11,23 +11,41 @@ grep -Fq 'HOST_GO:=$(STAGING_DIR_HOSTPKG)/bin/go' "$DAED_MAKEFILE" || {
   exit 1
 }
 
-grep -Fq '$(HOST_GO) get -u=patch' "$DAED_MAKEFILE" || {
-  echo "daed Makefile does not use host go for go get"
+PREPARE_BLOCK="$(awk '/^define Build\/Prepare/{flag=1; next} /^endef$/{flag=0} flag' "$DAED_MAKEFILE")"
+COMPILE_BLOCK="$(awk '/^define Build\/Compile/{flag=1; next} /^endef$/{flag=0} flag' "$DAED_MAKEFILE")"
+
+if printf '%s\n' "$PREPARE_BLOCK" | grep -Eq 'go (get -u=patch|mod tidy|mod edit|generate )|\\$\(HOST_GO\)'; then
+  echo "daed Build/Prepare still uses Go commands"
+  exit 1
+fi
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=../outbound' || {
+  echo "daed Build/Compile does not use host go for outbound replacement"
   exit 1
 }
 
-grep -Fq '$(HOST_GO) mod tidy' "$DAED_MAKEFILE" || {
-  echo "daed Makefile does not use host go for go mod tidy"
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=../quic-go' || {
+  echo "daed Build/Compile does not use host go for quic-go replacement"
   exit 1
 }
 
-grep -Fq '$(HOST_GO) generate ./...' "$DAED_MAKEFILE" || {
-  echo "daed Makefile does not use host go for go generate"
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) get -u=patch' || {
+  echo "daed Build/Compile does not use host go for go get"
   exit 1
 }
 
-if grep -Eq '(^|[;[:space:]])go (get -u=patch|mod tidy|mod edit|generate )' "$DAED_MAKEFILE"; then
-  echo "daed Makefile still uses bare go commands"
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) mod tidy' || {
+  echo "daed Build/Compile does not use host go for go mod tidy"
+  exit 1
+}
+
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(HOST_GO) generate ./...' || {
+  echo "daed Build/Compile does not use host go for go generate"
+  exit 1
+}
+
+if printf '%s\n' "$COMPILE_BLOCK" | grep -Eq '(^|[;[:space:]])go (get -u=patch|mod tidy|mod edit|generate )'; then
+  echo "daed Build/Compile still uses bare go commands"
   exit 1
 fi
 

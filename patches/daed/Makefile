@@ -120,14 +120,8 @@ define Build/Prepare
 				wget -qO - https://github.com/QiuSimons/luci-app-daed/raw/refs/heads/kix/patchset/0001-fix-runtime-stats.patch | patch -p2 --forward --batch ; \
 			fi ; \
 			git submodule update --init ; \
-			$(HOST_GO) get -u=patch ; \
-			$(HOST_GO) mod tidy ; \
 		popd ; \
 		pushd $(PKG_BUILD_DIR) ; \
-			$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
-			$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
-			$(HOST_GO) get -u=patch ; \
-			$(HOST_GO) mod tidy ; \
 			wget -qO default.pgo "https://github.com/QiuSimons/luci-app-dae/raw/refs/heads/kix/dae/pprof/default.pgo" ; \
 		popd ; \
 		mkdir -p $(DAED_BUILD_DIR)/.node_tmp/config ; \
@@ -175,6 +169,14 @@ define Build/Compile
 		$(GO_GENERAL_BUILD_CONFIG_VARS) \
 		$(GO_PKG_BUILD_CONFIG_VARS) \
 		$(GO_PKG_BUILD_VARS) ; \
+		pushd $(PKG_BUILD_DIR)/dae-core ; \
+			$(HOST_GO) get -u=patch ; \
+			$(HOST_GO) mod tidy ; \
+		popd ; \
+		$(HOST_GO) mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
+		$(HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
+		$(HOST_GO) get -u=patch ; \
+		$(HOST_GO) mod tidy ; \
 		$(HOST_GO) generate ./... ; \
 		cd dae-core ; \
 		export \
