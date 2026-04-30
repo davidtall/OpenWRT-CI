@@ -16,6 +16,11 @@ grep -Fq 'PKG_MIRROR_HASH:=skip' "$DAE_MAKEFILE" || {
 	exit 1
 }
 
+grep -Fq 'OUTBOUND_VERSION:=d7f10a0d190322dfa98bef469c19caa5e72fdbd8' "$DAE_MAKEFILE" || {
+	echo "dae Makefile is not pinned to the fixed outbound revision with go-rc2 restored"
+	exit 1
+}
+
 grep -Fq 'git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR)' "$DAE_MAKEFILE" || {
 	echo "dae Build/Prepare does not clone the configured kdae branch"
 	exit 1
@@ -26,8 +31,8 @@ grep -Fq 'cut -f1' "$DAE_MAKEFILE" || {
 	exit 1
 }
 
-grep -Fq 'rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound' "$DAE_MAKEFILE" || {
-	echo "dae Build/Prepare does not clone the kdae outbound fork inside the source tree"
+grep -Fq 'rm -rf outbound && git clone -b $(OUTBOUND_BRANCH) https://github.com/olicesx/outbound.git outbound && git -C outbound checkout $(OUTBOUND_VERSION)' "$DAE_MAKEFILE" || {
+	echo "dae Build/Prepare does not clone and pin the kdae outbound fork inside the source tree"
 	exit 1
 }
 

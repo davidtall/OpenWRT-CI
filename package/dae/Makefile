@@ -12,6 +12,8 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 #PKG_SOURCE_URL:=https://github.com/daeuniverse/dae.git
 PKG_SOURCE_URL:=https://github.com/olicesx/dae.git
 GIT_BRANCH:=kdae
+OUTBOUND_BRANCH:=perf/complete-optimizations
+OUTBOUND_VERSION:=d7f10a0d190322dfa98bef469c19caa5e72fdbd8
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(shell git ls-remote $(PKG_SOURCE_URL) $(GIT_BRANCH) | cut -f1)
 PKG_MIRROR_HASH:=skip
@@ -88,7 +90,7 @@ define Build/Prepare
 	( \
 		rm -rf $(PKG_BUILD_DIR) && git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) && git -C $(PKG_BUILD_DIR) checkout $(PKG_SOURCE_VERSION) ; \
 		pushd $(PKG_BUILD_DIR) ; \
-			rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound ; \
+			rm -rf outbound && git clone -b $(OUTBOUND_BRANCH) https://github.com/olicesx/outbound.git outbound && git -C outbound checkout $(OUTBOUND_VERSION) ; \
 			git submodule update --init ; \
 		popd ; \
 	)
