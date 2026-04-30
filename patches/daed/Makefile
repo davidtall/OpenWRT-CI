@@ -195,6 +195,7 @@ define Build/Compile
 			$(DAED_HOST_GO) generate ./control/control.go ; \
 			$(DAED_HOST_GO) generate ./trace/trace.go ; \
 		popd ; \
+		$(call GoPackage/Build/Compile) ; \
 	)
 endef
 

@@ -44,6 +44,11 @@ printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAED_HOST_GO) generate ./...' || {
   exit 1
 }
 
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(call GoPackage/Build/Compile)' || {
+  echo "daed Build/Compile does not invoke the OpenWrt Go package compiler"
+  exit 1
+}
+
 if printf '%s\n' "$COMPILE_BLOCK" | grep -Eq '(^|[;[:space:]])go (get -u=patch|mod tidy|mod edit|generate )'; then
   echo "daed Build/Compile still uses bare go commands"
   exit 1
