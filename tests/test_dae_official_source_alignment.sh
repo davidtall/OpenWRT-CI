@@ -21,9 +21,9 @@ grep -Fq 'https://github.com/olicesx/outbound.git' "$DAE_MAKEFILE" || {
 	exit 1
 }
 
-grep -Fq 'https://github.com/olicesx/quic-go.git' "$DAE_MAKEFILE" || {
-	echo "dae Makefile does not use the kdae quic-go replacement"
+if grep -Fq 'https://github.com/olicesx/quic-go.git' "$DAE_MAKEFILE"; then
+	echo "dae Makefile still clones the removed kdae quic-go replacement"
 	exit 1
-}
+fi
 
 echo "dae kdae source alignment test passed"

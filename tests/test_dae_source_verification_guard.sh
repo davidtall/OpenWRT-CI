@@ -31,10 +31,10 @@ grep -Fq 'rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations 
 	exit 1
 }
 
-grep -Fq 'rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go' "$DAE_MAKEFILE" || {
-	echo "dae Build/Prepare does not clone the kdae quic-go fork inside the source tree"
+if grep -Fq 'https://github.com/olicesx/quic-go.git' "$DAE_MAKEFILE"; then
+	echo "dae Build/Prepare still clones the removed kdae quic-go fork"
 	exit 1
-}
+fi
 
 PREPARE_BLOCK="$(awk '/^define Build\/Prepare/{flag=1; next} /^endef$/{flag=0} flag' "$DAE_MAKEFILE")"
 COMPILE_BLOCK="$(awk '/^define Build\/Compile/{flag=1; next} /^endef$/{flag=0} flag' "$DAE_MAKEFILE")"
@@ -49,10 +49,10 @@ printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) mod edit -replace gith
 	exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go' || {
-	echo "dae Build/Compile does not replace quic-go with the kdae fork"
+if printf '%s\n' "$COMPILE_BLOCK" | grep -Fq 'github.com/daeuniverse/quic-go=./quic-go'; then
+	echo "dae Build/Compile still replaces quic-go with the removed kdae fork"
 	exit 1
-}
+fi
 
 printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAE_HOST_GO) get -u=patch' || {
 	echo "dae Build/Compile does not use host go for go get"

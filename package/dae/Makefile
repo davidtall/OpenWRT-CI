@@ -89,7 +89,6 @@ define Build/Prepare
 		rm -rf $(PKG_BUILD_DIR) && git clone -b $(GIT_BRANCH) $(PKG_SOURCE_URL) $(PKG_BUILD_DIR) && git -C $(PKG_BUILD_DIR) checkout $(PKG_SOURCE_VERSION) ; \
 		pushd $(PKG_BUILD_DIR) ; \
 			rm -rf outbound && git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git outbound ; \
-			rm -rf quic-go && git clone --depth=1 -b main https://github.com/olicesx/quic-go.git quic-go ; \
 			git submodule update --init ; \
 		popd ; \
 	)
@@ -119,7 +118,6 @@ define Build/Compile
 		BPF_TRACE_TARGET="$(GO_ARCH)" ; \
 		pushd $(PKG_BUILD_DIR) ; \
 			$(DAE_HOST_GO) mod edit -replace github.com/daeuniverse/outbound=./outbound ; \
-			$(DAE_HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=./quic-go ; \
 			$(DAE_HOST_GO) get -u=patch ; \
 			$(DAE_HOST_GO) mod tidy ; \
 			$(DAE_HOST_GO) generate ./control/control.go ; \
