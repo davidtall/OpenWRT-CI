@@ -6,7 +6,7 @@
 #WRT_REPO='https://github.com/davidtall/immortalwrt-6.12'
 #WRT_BRANCH='main'
 
-WRT_REPO='https://github.com/VIKINGYFY/immortalwrt'
+WRT_REPO='https://github.com/davidtall/immortalwrt'
 WRT_BRANCH='main'
 
 if [ -n "$1" ]; then
