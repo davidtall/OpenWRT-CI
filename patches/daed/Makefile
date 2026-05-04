@@ -5,17 +5,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=daed
-PKG_VERSION:=2026.04.25
-DAED_VERSION:=daed-67f14b1
-WING_VERSION:=wing-20225e3
-CORE_VERSION:=core-8fd2eeb
+PKG_VERSION:=2026.05.03
+DAED_VERSION:=daed-4cab3b7
+WING_VERSION:=wing-dc50308
+CORE_VERSION:=core-80e4416
 WING_HASH_SHORT:=$(shell echo $(WING_VERSION) | cut -d- -f2)
 CORE_HASH_SHORT:=$(shell echo $(CORE_VERSION) | cut -d- -f2)
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=67f14b1fd78e6cd13c377c08bb65272840faa446
+PKG_SOURCE_VERSION:=4cab3b77373f450c1617eb392a2f59dd3872ea3f
 PKG_SOURCE_URL:=https://github.com/daeuniverse/daed.git
 PKG_MIRROR_HASH:=skip
 
@@ -111,16 +111,15 @@ define Build/Prepare
 		rm -rf $(DAED_BUILD_DIR)/outbound ; \
 		git clone --depth=1 -b perf/complete-optimizations https://github.com/olicesx/outbound.git $(DAED_BUILD_DIR)/outbound ; \
 		rm -rf $(DAED_BUILD_DIR)/quic-go ; \
-		git clone --depth=1 -b main https://github.com/olicesx/quic-go.git $(DAED_BUILD_DIR)/quic-go ; \
+		git clone --depth=1 -b perf/node-pooling-v2 https://github.com/olicesx/quic-go.git $(DAED_BUILD_DIR)/quic-go ; \
 		pushd $(PKG_BUILD_DIR)/dae-core ; \
-			wget -qO - https://github.com/QiuSimons/luci-app-daed/raw/refs/heads/kix/patchset/0001-fix-runtime-stats.patch | patch -p1 ; \
 			git submodule update --init ; \
 			go get -u=patch ; \
 			go mod tidy ; \
 		popd ; \
 		pushd $(PKG_BUILD_DIR) ; \
 			go mod edit -replace github.com/daeuniverse/outbound=../outbound ; \
-			go mod edit -replace github.com/daeuniverse/quic-go=../quic-go ; \
+			go mod edit -replace github.com/olicesx/quic-go=../quic-go ; \
 			go get -u=patch ; \
 			go mod tidy ; \
 			wget -qO default.pgo "https://github.com/QiuSimons/luci-app-dae/raw/refs/heads/kix/dae/pprof/default.pgo" ; \
