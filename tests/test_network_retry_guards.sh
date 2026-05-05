@@ -25,8 +25,13 @@ grep -q 'retry_cmd 5 15 git -C "\$REPO_NAME" fetch --depth=1 origin "\$PKG_COMMI
   exit 1
 }
 
-grep -q 'retry_cmd 5 15 curl -fsSL https://build-scripts.immortalwrt.org/init_build_environment.sh' "$WORKFLOW" || {
-  echo "workflow does not retry init script download"
+grep -q 'dos2unix "\$GITHUB_WORKSPACE/Scripts/init_build_environment.sh"' "$WORKFLOW" || {
+  echo "workflow does not normalize the bundled init script before running it"
+  exit 1
+}
+
+grep -q '\${SUDO} bash "\$GITHUB_WORKSPACE/Scripts/init_build_environment.sh"' "$WORKFLOW" || {
+  echo "workflow does not run the bundled init script"
   exit 1
 }
 

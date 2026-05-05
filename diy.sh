@@ -3,7 +3,7 @@
 #WRT_REPO='https://github.com/davidtall/LiBwrt-openwrt-6.x'
 #WRT_BRANCH='k6.12-nss'
 
-#WRT_REPO='https://github.com/davidtall/immortalwrt-6.12'
+#WRT_REPO='https://github.com/davidtall/immortalwrt'
 #WRT_BRANCH='main'
 
 WRT_REPO='https://github.com/VIKINGYFY/immortalwrt'
@@ -34,7 +34,7 @@ export WRT_THEME='argon'
 export WRT_IP='192.168.10.1'
 export WRT_CI='WSL-OpenWRT-CI'
 export WRT_ARCH=$(sed -n 's/.*_DEVICE_\(.*\)_DEVICE_.*/\1/p' $GITHUB_WORKSPACE/Config/$WRT_CONFIG.txt | head -n 1)
-export CI_NAME='QCA-6.12-LiBwrt'
+export CI_NAME='QCA-6.18-LiBwrt'
 export WRT_TARGET=$(grep -m 1 -oP '^CONFIG_TARGET_\K[\w]+(?=\=y)' $GITHUB_WORKSPACE/Config/$WRT_CONFIG.txt | tr '[:lower:]' '[:upper:]')
 
 . $GITHUB_WORKSPACE/Scripts/function.sh

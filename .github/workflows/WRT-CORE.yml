@@ -176,9 +176,13 @@ jobs:
           run_apt autoclean
           run_apt clean
           retry_cmd 3 15 run_apt install dos2unix python3-netifaces libfuse-dev
-          retry_cmd 5 15 curl -fsSL https://build-scripts.immortalwrt.org/init_build_environment.sh -o /tmp/init_build_environment.sh
-          ${SUDO} bash /tmp/init_build_environment.sh
-          rm -f /tmp/init_build_environment.sh
+          dos2unix "$GITHUB_WORKSPACE/Scripts/init_build_environment.sh"
+          ${SUDO} bash "$GITHUB_WORKSPACE/Scripts/init_build_environment.sh"
+          if command -v go >/dev/null 2>&1; then
+            echo "GO_INSTALLED=true" >> "$GITHUB_ENV"
+          else
+            echo "GO_INSTALLED=false" >> "$GITHUB_ENV"
+          fi
           if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
             ${SUDO} systemctl daemon-reload
           fi
@@ -189,6 +193,15 @@ jobs:
 #          sudo mkdir -p /mnt/build_wrt
 #          sudo chown $USER:$USER /mnt/build_wrt
 #          sudo ln -s /mnt/build_wrt $GITHUB_WORKSPACE/wrt
+
+      - name: Setup Go
+        if: env.GO_INSTALLED != 'true'
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+
+      - name: Check Go
+        run: go version
 
       - name: Initialization Values
         run: |

@@ -1,19 +1,13 @@
-﻿# SPDX-License-Identifier: MIT
-# Copyright (C) 2026 VIKINGYFY
-
 #CI项目
-name: QCA-6.12-VIKINGYFY
+name: QCA-6.18-VIKINGYFY
 
 #CI计划
 on:
-  #定时编译：每天凌晨1点
-  schedule:
-    - cron: '0 1 * * *'
   #自动编译：当Auto-Clean运行完成后
-#  workflow_run:
-#    workflows: ["Auto-Clean"]
-#    types:
-#      - completed
+  workflow_run:
+    workflows: ["Auto-Clean"]
+    types:
+      - completed
   #手动编译
   workflow_dispatch:
     inputs:
@@ -41,7 +35,7 @@ jobs:
 #        CONFIG: [IPQ807X-WIFI-NO, IPQ807X-WIFI-YES,IPQ60XX-WIFI-NO, IPQ60XX-WIFI-YES]
         CONFIG: [IPQ60XX-WIFI-NO, IPQ60XX-WIFI-YES]
         SOURCE: [VIKINGYFY/immortalwrt]
-#        SOURCE: [davidtall/VIKINGYFY-immort]
+#        SOURCE: [davidtall/immortalwrt]
         BRANCH: [main]
 
     #调用公用编译核心WRT-CORE.yml

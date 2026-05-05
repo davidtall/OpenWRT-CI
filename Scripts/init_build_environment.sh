@@ -193,22 +193,19 @@ function update_apt_source() {
 		deb https://ppa.launchpadcontent.net/git-core/ppa/ubuntu $UBUNTU_CODENAME main
 		deb-src https://ppa.launchpadcontent.net/git-core/ppa/ubuntu $UBUNTU_CODENAME main
 	EOF
-	curl -fsL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xe1dd270288b4e6030699e45fa1715d88e1df1f24" -o "/etc/apt/trusted.gpg.d/git-core-ubuntu-ppa.asc"
+	curl -fsL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf911ab184317630c59970973e363c90f8f1b6217" -o "/etc/apt/trusted.gpg.d/git-core-ubuntu-ppa.asc"
 
-	# TODO: remove this once llvm-toolchain provides trixie package
-	if [ "$VERSION_CODENAME" != "trixie" ]; then
-		cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-			deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-$LLVM_VERSION main
-			deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-$LLVM_VERSION main
-		EOF
-		curl -fsL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
-	fi
+	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
+		deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-$LLVM_VERSION main
+		deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-$LLVM_VERSION main
+	EOF
+	curl -fsL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-$UBUNTU_CODENAME.list"
 		deb https://ppa.launchpadcontent.net/longsleep/golang-backports/ubuntu $UBUNTU_CODENAME main
 		deb-src https://ppa.launchpadcontent.net/longsleep/golang-backports/ubuntu $UBUNTU_CODENAME main
 	EOF
-	curl -fsL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x52b59b1571a79dbc054901c0f6bc817356a3d45e" -o "/etc/apt/trusted.gpg.d/longsleep-ubuntu-golang-backports-$UBUNTU_CODENAME.asc"
+	curl -fsL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x876b22ba887ca91614b5323fc631127f87fa12d1" -o "/etc/apt/trusted.gpg.d/longsleep-ubuntu-golang-backports-$UBUNTU_CODENAME.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/github-cli.list"
 		deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main
@@ -219,16 +216,6 @@ function update_apt_source() {
 		sed -i -e "s,apt.llvm.org,mirrors.tuna.tsinghua.edu.cn/llvm-apt,g" -e "s,^deb-src,# deb-src,g" "/etc/apt/sources.list.d/llvm-toolchain.list"
 		sed -i "s,ppa.launchpadcontent.net,launchpad.proxy.ustclug.org,g" "/etc/apt/sources.list.d"/*
 	fi
-
-	# TODO: remove this once git-core and golang PPA update signing key
-	case "$VERSION_CODENAME" in
-	"trixie")
-		cat <<-EOF > "/etc/apt/apt.conf.d/99insecure-signatures"
-			Acquire::AllowInsecureRepositories "true";
-			Acquire::AllowDowngradeToInsecureRepositories "true";
-		EOF
-	;;
-	esac
 
 	apt update -y $BPO_FLAG
 
@@ -255,7 +242,7 @@ function install_dependencies() {
 		pip3 config set install.trusted-host "https://mirrors.aliyun.com"
 	fi
 
-	apt install -y --allow-unauthenticated git
+	apt install -y git
 
 	apt install -y $BPO_FLAG "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-$GCC_VERSION-multilib" "g++-$GCC_VERSION-multilib"
 	for i in "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-ar-$GCC_VERSION" "gcc-nm-$GCC_VERSION" "gcc-ranlib-$GCC_VERSION"; do
@@ -270,16 +257,16 @@ function install_dependencies() {
 	done
 	ln -svf "/usr/lib/llvm-$LLVM_VERSION" "/usr/lib/llvm"
 
-	apt install -y --allow-unauthenticated $BPO_FLAG nodejs yarn
+	apt install -y $BPO_FLAG nodejs yarn
 	if [ -n "$CHN_NET" ]; then
 		npm config set registry "https://registry.npmmirror.com" --global
 		yarn config set registry "https://registry.npmmirror.com" --global
 	fi
 
-	apt install -y --allow-unauthenticated $BPO_FLAG golang-1.25-go
+	apt install -y $BPO_FLAG golang-1.26-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
-	ln -svf "/usr/lib/go-1.25/bin/go" "/usr/bin/go"
-	ln -svf "/usr/lib/go-1.25/bin/gofmt" "/usr/bin/gofmt"
+	ln -svf "/usr/lib/go-1.26/bin/go" "/usr/bin/go"
+	ln -svf "/usr/lib/go-1.26/bin/gofmt" "/usr/bin/gofmt"
 	if [ -n "$CHN_NET" ]; then
 		go env -w GOPROXY="https://proxy.golang.org|https://goproxy.cn|direct"
 		go env -w GOSUMDB=sum.golang.org

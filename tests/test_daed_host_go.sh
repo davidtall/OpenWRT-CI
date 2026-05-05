@@ -24,7 +24,7 @@ printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAED_HOST_GO) mod edit -replace git
   exit 1
 }
 
-printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAED_HOST_GO) mod edit -replace github.com/daeuniverse/quic-go=../quic-go' || {
+printf '%s\n' "$COMPILE_BLOCK" | grep -Fq '$(DAED_HOST_GO) mod edit -replace github.com/olicesx/quic-go=../quic-go' || {
   echo "daed Build/Compile does not use host go for quic-go replacement"
   exit 1
 }

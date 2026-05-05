@@ -23,6 +23,16 @@ grep -q 'GOSUMDB=sum.golang.org' "$WORKFLOW" || {
   exit 1
 }
 
+grep -q 'uses: actions/setup-go@v6' "$WORKFLOW" || {
+  echo "workflow missing setup-go fallback for Go 1.26"
+  exit 1
+}
+
+grep -q "go-version: '1.26'" "$WORKFLOW" || {
+  echo "workflow setup-go fallback does not request Go 1.26"
+  exit 1
+}
+
 if grep -q 'GOSUMDB=off' "$WORKFLOW"; then
   echo "workflow disables GOSUMDB, which breaks Go toolchain downloads"
   exit 1
