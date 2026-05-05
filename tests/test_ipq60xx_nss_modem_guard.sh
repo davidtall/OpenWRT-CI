@@ -14,6 +14,9 @@ grep -q 'CONFIG_PACKAGE_kmod-qca-nss-ecm=y' "$FUNCTIONS_SH" || {
 }
 
 for symbol in \
+	CONFIG_PACKAGE_kmod-usb-net-qmi-wwan \
+	CONFIG_PACKAGE_kmod-usb-net-qmi-wwan-fibocom \
+	CONFIG_PACKAGE_kmod-usb-net-qmi-wwan-quectel \
 	CONFIG_PACKAGE_luci-app-qmodem \
 	CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_ndisc6 \
 	CONFIG_PACKAGE_luci-app-qmodem_INCLUDE_vendor-qmi-wwan \
@@ -26,6 +29,10 @@ for symbol in \
 do
 	if grep -q "^${symbol}=y$" "$GENERAL_CONFIG"; then
 		echo "unsafe modem symbol still enabled with NSS ECM: ${symbol}"
+		exit 1
+	fi
+	if grep -q "^${symbol}=y$" "$FUNCTIONS_SH"; then
+		echo "unsafe modem symbol still emitted by function.sh: ${symbol}"
 		exit 1
 	fi
 done
