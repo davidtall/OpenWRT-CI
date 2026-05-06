@@ -112,6 +112,8 @@ function remove_wifi() {
   sed -i 's/\(ath11k-firmware-[^ ]*\|ipq-wifi-[^ ]*\|kmod-ath11k-[^ ]*\)//g' ./target/linux/qualcommax/${target}/target.mk
   sed -i 's/\(ath11k-firmware-[^ ]*\|ipq-wifi-[^ ]*\|kmod-ath11k-[^ ]*\)//g' ./target/linux/qualcommax/image/${target}.mk
   sed -i 's/\(ath10k-firmware-[^ ]*\|kmod-ath10k [^ ]*\|kmod-ath10k-[^ ]*\)//g' ./target/linux/qualcommax/image/${target}.mk
+  sed -i 's/\bkmod-qca-nss-drv-wifi-meshmgr\b//g' ./target/linux/qualcommax/Makefile
+  cat ./target/linux/qualcommax/Makefile
   #删除无线组件
   rm -rf package/network/services/hostapd
   rm -rf package/firmware/ipq-wifi
