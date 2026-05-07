@@ -29,6 +29,7 @@ CONFIG_ARM64_CONTPTE=y
 CONFIG_PERSISTENT_HUGE_ZERO_FOLIO=n
 CONFIG_NO_PAGE_MAPCOUNT=n
 CONFIG_ARM64_BRBE=y
+CONFIG_NF_CONNTRACK_DSCPREMARK_EXT=y
 EOF
     echo "cat_kernel_config to $1 done"
   fi
@@ -101,10 +102,11 @@ function kernel_version() {
 function remove_wifi() {
   local target=$1
   #去除依赖
-  sed -i 's/\(ath11k-firmware-[^ ]*\|ipq-wifi-[^ ]*\|kmod-ath11k-[^ ]*\)//g' ./target/linux/qualcommax/Makefile
-  sed -i 's/\(ath11k-firmware-[^ ]*\|ipq-wifi-[^ ]*\|kmod-ath11k-[^ ]*\)//g' ./target/linux/qualcommax/${target}/target.mk
-  sed -i 's/\(ath11k-firmware-[^ ]*\|ipq-wifi-[^ ]*\|kmod-ath11k-[^ ]*\)//g' ./target/linux/qualcommax/image/${target}.mk
-  sed -i 's/\(ath10k-firmware-[^ ]*\|kmod-ath10k [^ ]*\|kmod-ath10k-[^ ]*\)//g' ./target/linux/qualcommax/image/${target}.mk
+  local wifi_pkg_pattern='wpad-[^ ]*|hostapd-[^ ]*|kmod-ath|kmod-ath10k|kmod-ath10k-[^ ]*|kmod-ath11k|kmod-ath11k-[^ ]*|kmod-mac80211|kmod-cfg80211|ath10k-firmware-[^ ]*|ath11k-firmware-[^ ]*|ipq-wifi-[^ ]*'
+  sed -i -E ":again; s/(^|[[:space:]])-?(${wifi_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//" ./target/linux/qualcommax/Makefile
+  sed -i -E ":again; s/(^|[[:space:]])-?(${wifi_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//" ./target/linux/qualcommax/${target}/target.mk
+  sed -i -E ":again; s/(^|[[:space:]])-?(${wifi_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//" ./target/linux/qualcommax/image/${target}.mk
+  sed -i 's/\bkmod-qca-nss-drv-wifi-meshmgr\b//g' ./target/linux/qualcommax/Makefile
   #删除无线组件
   rm -rf package/network/services/hostapd
   rm -rf package/firmware/ipq-wifi
@@ -150,8 +152,3 @@ function generate_config() {
   #增加内核选项
   cat_kernel_config "target/linux/qualcommax/${target}/config-default"
 }
-
-
-
-
-

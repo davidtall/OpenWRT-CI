@@ -263,6 +263,7 @@ jobs:
           key: ${{ env.WRT_ARCH }}-${{ hashFiles('repo_flag') }}-${{ env.WRT_DATE }}
           restore-keys: |
             ${{ env.WRT_ARCH }}-${{ hashFiles('repo_flag') }}-
+            ${{ env.WRT_ARCH }}-
 
       - name: Refresh the cache
         run: |

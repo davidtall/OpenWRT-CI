@@ -11,8 +11,15 @@ grep -q '\[\[ "\$WRT_CONFIG" == \*"NOWIFI"\* || "\$WRT_CONFIG" == \*"WIFI-NO"\* 
 	exit 1
 }
 
-grep -q "sed -i 's/\\\\(ath11k-firmware-\\[^ ]\\*\\\\|ipq-wifi-\\[^ ]\\*\\\\|kmod-ath11k-\\[^ ]\\*\\\\)//g'" "$FUNCTIONS_SH" || {
-	echo "function.sh no longer strips qualcommax ath11k and ipq-wifi package references during no-Wi-Fi builds"
+for token in ath11k-firmware ipq-wifi kmod-ath11k kmod-mac80211 kmod-cfg80211 wpad- hostapd-; do
+	grep -q "local wifi_pkg_pattern=.*${token}" "$FUNCTIONS_SH" || {
+		echo "function.sh no longer strips ${token} during no-Wi-Fi builds"
+		exit 1
+	}
+done
+
+grep -q 'kmod-qca-nss-drv-wifi-meshmgr' "$FUNCTIONS_SH" || {
+	echo "function.sh no longer strips kmod-qca-nss-drv-wifi-meshmgr during no-Wi-Fi builds"
 	exit 1
 }
 
