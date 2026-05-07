@@ -113,7 +113,6 @@ function remove_wifi() {
   sed -i -E ":again; s/(^|[[:space:]])-?(${wifi_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//" ./target/linux/qualcommax/${target}/target.mk
   sed -i -E ":again; s/(^|[[:space:]])-?(${wifi_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//" ./target/linux/qualcommax/image/${target}.mk
   sed -i 's/\bkmod-qca-nss-drv-wifi-meshmgr\b//g' ./target/linux/qualcommax/Makefile
-  cat ./target/linux/qualcommax/Makefile
   #删除无线组件
   rm -rf package/network/services/hostapd
   rm -rf package/firmware/ipq-wifi
