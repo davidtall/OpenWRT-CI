@@ -112,14 +112,14 @@ function remove_wifi() {
   rm -rf package/firmware/ipq-wifi
 }
 
-function remove_missing_device_packages() {
+function normalize_athena_led_device_packages() {
   local config_file=$1
-  local missing_pkg_pattern='luci-app-athena-led|luci-i18n-athena-led-zh-cn'
+  local missing_pkg_pattern='luci-i18n-athena-led-zh-cn'
 
   find ./target/linux/qualcommax -type f \( -name "*.mk" -o -name "target.mk" \) -print0 2>/dev/null |
     xargs -0 -r sed -i -E ":again; s/(^|[[:space:]])-?(${missing_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//"
 
-  sed -i -E "/^CONFIG_PACKAGE_(luci-app-athena-led|luci-i18n-athena-led-zh-cn)=/d" "$config_file"
+  sed -i -E "/^CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn=/d" "$config_file"
 }
 
 function set_kernel_size() {
@@ -155,7 +155,7 @@ function generate_config() {
   fi
 
   set_nss_driver $config_file
-  remove_missing_device_packages $config_file
+  normalize_athena_led_device_packages $config_file
   #增加ebpf
   cat_ebpf_config $config_file
   enable_skb_recycler $config_file
