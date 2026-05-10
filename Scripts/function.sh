@@ -112,6 +112,16 @@ function remove_wifi() {
   rm -rf package/firmware/ipq-wifi
 }
 
+function remove_missing_device_packages() {
+  local config_file=$1
+  local missing_pkg_pattern='luci-app-athena-led|luci-i18n-athena-led-zh-cn'
+
+  find ./target/linux/qualcommax -type f \( -name "*.mk" -o -name "target.mk" \) -print0 2>/dev/null |
+    xargs -0 -r sed -i -E ":again; s/(^|[[:space:]])-?(${missing_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//"
+
+  sed -i -E "/^CONFIG_PACKAGE_(luci-app-athena-led|luci-i18n-athena-led-zh-cn)=/d" "$config_file"
+}
+
 function set_kernel_size() {
   #修改jdc ax1800 pro 的内核大小为12M
   image_file='./target/linux/qualcommax/image/ipq60xx.mk'
@@ -145,6 +155,7 @@ function generate_config() {
   fi
 
   set_nss_driver $config_file
+  remove_missing_device_packages $config_file
   #增加ebpf
   cat_ebpf_config $config_file
   enable_skb_recycler $config_file
