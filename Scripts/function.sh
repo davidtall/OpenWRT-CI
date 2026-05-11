@@ -116,10 +116,19 @@ function normalize_athena_led_device_packages() {
   local config_file=$1
   local missing_pkg_pattern='luci-i18n-athena-led-zh-cn'
 
+  if ! find ./package ./feeds -type f -path '*/luci-app-athena-led/Makefile' -print -quit 2>/dev/null | grep -q .; then
+    missing_pkg_pattern='luci-app-athena-led|luci-i18n-athena-led-zh-cn'
+  fi
+
   find ./target/linux/qualcommax -type f \( -name "*.mk" -o -name "target.mk" \) -print0 2>/dev/null |
     xargs -0 -r sed -i -E ":again; s/(^|[[:space:]])-?(${missing_pkg_pattern})([[:space:]]|$)/ /g; t again; s/[[:space:]]+$//"
 
-  sed -i -E "/^CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn=/d" "$config_file"
+  sed -i -E ":again; s/(^CONFIG_TARGET_DEVICE_PACKAGES_[^\"]*=\")([^\"]*)(^|[[:space:]])-?(${missing_pkg_pattern})([[:space:]]|\"$)/\1\2\5/g; t again; s/[[:space:]]+\"/\"/" "$config_file"
+  sed -i -E "/^#? ?CONFIG_PACKAGE_luci-i18n-athena-led-zh-cn(=| is not set)/d" "$config_file"
+
+  if [[ "$missing_pkg_pattern" == *"luci-app-athena-led"* ]]; then
+    sed -i -E "/^#? ?CONFIG_PACKAGE_luci-app-athena-led(=| is not set)/d" "$config_file"
+  fi
 }
 
 function set_kernel_size() {

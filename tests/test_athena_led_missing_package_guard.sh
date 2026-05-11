@@ -10,8 +10,13 @@ PACKAGES_SH="$ROOT_DIR/Scripts/Packages.sh"
 [ -f "$CONFIG_TEST" ] || { echo "missing TEST.txt"; exit 1; }
 [ -f "$PACKAGES_SH" ] || { echo "missing Packages.sh"; exit 1; }
 
-grep -q '^UPDATE_PACKAGE "luci-app-athena-led" "haipengno1/luci-app-athena-led" "main"$' "$PACKAGES_SH" || {
-	echo "Packages.sh does not fetch luci-app-athena-led"
+if grep -q 'haipengno1/luci-app-athena-led' "$PACKAGES_SH"; then
+	echo "Packages.sh still overrides the source tree athena-led package with haipengno1"
+	exit 1
+fi
+
+grep -q '^UPDATE_PACKAGE "luci-app-athena-led" "NONGFAH/luci-app-athena-led" "main"$' "$PACKAGES_SH" || {
+	echo "Packages.sh does not pin luci-app-athena-led to the known-working NONGFAH package"
 	exit 1
 }
 
@@ -30,10 +35,10 @@ if grep -q 'luci-i18n-athena-led-zh-cn' "$CONFIG_TEST"; then
 	exit 1
 fi
 
-if grep -q "missing_pkg_pattern=.*luci-app-athena-led" "$FUNCTIONS_SH"; then
-	echo "function.sh still strips luci-app-athena-led from device images"
+grep -q "find ./package ./feeds .*luci-app-athena-led/Makefile" "$FUNCTIONS_SH" || {
+	echo "function.sh does not check whether luci-app-athena-led exists before keeping it"
 	exit 1
-fi
+}
 
 grep -q 'luci-i18n-athena-led-zh-cn' "$FUNCTIONS_SH" || {
 	echo "function.sh does not strip the missing standalone athena-led i18n package"
