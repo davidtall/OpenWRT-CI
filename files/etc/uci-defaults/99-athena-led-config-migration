@@ -1,0 +1,65 @@
+#!/bin/sh
+
+CONFIG="/etc/config/athena_led"
+ROM_CONFIG="/rom/etc/config/athena_led"
+BACKUP_BASE="/etc/config/athena_led.config-migrated"
+
+[ -f "$CONFIG" ] || exit 0
+
+# The older Athena LED package used athena_led.config.enable/lightLevel/tempFlag.
+# luci-app-athena-led 2.x reads athena_led.general.enabled/light_level/temp_sensors
+# instead, so a kept sysupgrade config prevents the service from starting.
+if ! uci -q get athena_led.config.enable >/dev/null 2>&1 &&
+	! grep -q "config athena_led 'config'" "$CONFIG"; then
+	exit 0
+fi
+
+backup="$BACKUP_BASE"
+index=0
+while [ -e "$backup" ]; do
+	index=$((index + 1))
+	backup="${BACKUP_BASE}.${index}"
+done
+
+cp -a "$CONFIG" "$backup"
+rm -f "$CONFIG"
+
+if [ -s "$ROM_CONFIG" ] &&
+	grep -q "config settings 'general'" "$ROM_CONFIG" &&
+	grep -q "option enabled '1'" "$ROM_CONFIG"; then
+	cp -a "$ROM_CONFIG" "$CONFIG"
+else
+	cat > "$CONFIG" <<'EOF'
+config settings 'general'
+	option enabled '1'
+	option profile_mode 'single'
+	option light_level '5'
+	option button_gpio '71'
+	option net_interface 'br-lan'
+	option wan_ip_custom_url 'http://checkip.amazonaws.com'
+	option custom_content 'Roc-Gateway'
+	option http_length '15'
+	option http_cache_secs '60'
+	option weather_city 'auto'
+	option weather_source 'uapis'
+	option weather_format 'simple'
+	option temp_sensors '4'
+	option enable_sleep '0'
+	option disable_led_clock '0'
+	option disable_led_medal '0'
+	option disable_led_up '0'
+	option disable_led_down '0'
+
+config single_module
+	option duration '5'
+	option module 'time_group'
+	option param 'time_sec'
+EOF
+fi
+
+if [ -x /etc/init.d/athena_led ]; then
+	/etc/init.d/athena_led enable >/dev/null 2>&1 || true
+	/etc/init.d/athena_led restart >/dev/null 2>&1 || true
+fi
+
+exit 0
